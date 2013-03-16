@@ -2,7 +2,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.sk89q</groupId>
   <artifactId>worldedit</artifactId>
-  <version>5.5.2-SNAPSHOT</version>
+  <version>5.5.3-SNAPSHOT</version>
   <name>WorldEdit</name>
   <description>WorldEdit allows for editing the Minecraft SMP world
     en-masse, de-griefing, and fixing issues.</description>
@@ -37,10 +37,6 @@
     <repository>
       <id>bukkit-repo</id>
       <url>http://repo.bukkit.org/content/groups/public</url>
-    </repository>
-    <repository>
-      <id>spout-repo</id>
-      <url>http://repo.spout.org/</url>
     </repository>
   </repositories>
   <dependencies>
@@ -83,14 +79,14 @@
     <dependency>
       <groupId>org.bukkit</groupId>
       <artifactId>bukkit</artifactId>
-      <version>1.4.6-R0.2</version>
+      <version>1.5-R0.1-SNAPSHOT</version>
       <scope>compile</scope>
       <optional>true</optional>
     </dependency>
     <dependency>
       <groupId>org.bukkit</groupId>
       <artifactId>craftbukkit</artifactId>
-      <version>1.4.7-R0.1</version>
+      <version>1.5-R0.1-SNAPSHOT</version>
       <scope>compile</scope>
       <optional>true</optional>
     </dependency>
@@ -269,6 +265,12 @@
   <profiles>
     <profile>
       <id>spout</id>
+      <repositories>
+        <repository>
+          <id>spout-repo</id>
+          <url>http://nexus.spout.org/content/groups/public/</url>
+        </repository>
+      </repositories>
       <dependencies>
         <dependency>
           <groupId>org.spout</groupId>
