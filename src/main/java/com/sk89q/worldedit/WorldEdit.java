@@ -1395,6 +1395,8 @@ public class WorldEdit {
             } catch (CommandUsageException e) {
                 player.printError(e.getMessage());
                 player.printError(e.getUsage());
+            } catch (PlayerNeededException e) {
+                player.printError(e.getMessage());
             } catch (WrappedCommandException e) {
                 throw e.getCause();
             } catch (UnhandledCommandException e) {

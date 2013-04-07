@@ -626,6 +626,7 @@ public enum BlockType {
         usesData.add(BlockID.QUARTZ_STAIRS);
         usesData.add(BlockID.ACTIVATOR_RAIL);
         usesData.add(BlockID.DROPPER);
+        usesData.add(BlockID.HOPPER);
     }
 
     /**

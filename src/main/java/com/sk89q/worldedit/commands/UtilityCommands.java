@@ -452,6 +452,7 @@ public class UtilityCommands {
     )
     @CommandPermissions("worldedit.remove")
     @Logging(PLACEMENT)
+    @Console
     public void remove(CommandContext args, LocalSession session, LocalPlayer player,
                        EditSession editSession) throws WorldEditException {
 
@@ -493,10 +494,16 @@ public class UtilityCommands {
             return;
         }
 
-        Vector origin = session.getPlacementPosition(player);
-        int removed = player.getWorld().removeEntities(type, origin, radius);
+        int removed = 0;
+        if (player.isPlayer()) {
+            Vector origin = session.getPlacementPosition(player);
+            removed = player.getWorld().removeEntities(type, origin, radius);
+        } else {
+            for (LocalWorld world : we.getServer().getWorlds()) {
+                removed += world.removeEntities(type, new Vector(), radius);
+            }
+        }
         player.print(StringUtil.plural(removed, "Был удален " + removed + " " + "объект", "Было удалено " + removed + " " + "объекта", "Было удалено " + removed + " " + "объектов") + ".");
-
     }
 
     @Command(
