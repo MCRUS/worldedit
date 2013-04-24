@@ -478,6 +478,9 @@ public class WorldEdit {
                                     case NETHER_BRICK:
                                         data = 6;
                                         break;
+                                    case QUARTZ_BLOCK:
+                                        data = 7;
+                                        break;
 
                                     default:
                                         throw new InvalidItemException(arg, "Неверный тип ступеньки '" + typeAndData[1] + "'");
