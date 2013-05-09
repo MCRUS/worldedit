@@ -29,22 +29,22 @@ import java.util.EnumSet;
  * @author sk89q
  */
 public enum ClothColor {
-    WHITE(ID.WHITE, "White", "white"),
-    ORANGE(ID.ORANGE, "Orange", "orange"),
-    MAGENTA(ID.MAGENTA, "Magenta", "magenta"),
-    LIGHT_BLUE(ID.LIGHT_BLUE, "Light blue", "lightblue"),
-    YELLOW(ID.YELLOW, "Yellow", "yellow"),
-    LIGHT_GREEN(ID.LIGHT_GREEN, "Light green", "lightgreen"),
-    PINK(ID.PINK, "Pink", new String[] { "pink", "lightred" }),
-    GRAY(ID.GRAY, "Gray", new String[] { "grey", "gray" }),
-    LIGHT_GRAY(ID.LIGHT_GRAY, "Light gray", new String[] { "lightgrey", "lightgray" }),
-    CYAN(ID.CYAN, "Cyan", new String[] { "cyan", "turquoise" }),
-    PURPLE(ID.PURPLE, "Purple", new String[] { "purple", "violet" }),
-    BLUE(ID.BLUE, "Blue", "blue"),
-    BROWN(ID.BROWN, "Brown", new String[] { "brown", "cocoa", "coffee" }),
-    DARK_GREEN(ID.DARK_GREEN, "Dark green", new String[] { "green", "darkgreen", "cactusgreen", "cactigreen" }),
-    RED(ID.RED, "Red", "red"),
-    BLACK(ID.BLACK, "Black", "black");
+    WHITE(ID.WHITE, "Белый", "white"),
+    ORANGE(ID.ORANGE, "Оранжевый", "orange"),
+    MAGENTA(ID.MAGENTA, "Пурпурный", "magenta"),
+    LIGHT_BLUE(ID.LIGHT_BLUE, "Светло-синий", "lightblue"),
+    YELLOW(ID.YELLOW, "Желтый", "yellow"),
+    LIGHT_GREEN(ID.LIGHT_GREEN, "Светло-зеленый", "lightgreen"),
+    PINK(ID.PINK, "Розовый", new String[] { "pink", "lightred" }),
+    GRAY(ID.GRAY, "Сервый", new String[] { "grey", "gray" }),
+    LIGHT_GRAY(ID.LIGHT_GRAY, "Свктло-синий", new String[] { "lightgrey", "lightgray" }),
+    CYAN(ID.CYAN, "Голубой", new String[] { "cyan", "turquoise" }),
+    PURPLE(ID.PURPLE, "Фиолетовый", new String[] { "purple", "violet" }),
+    BLUE(ID.BLUE, "Синий", "blue"),
+    BROWN(ID.BROWN, "Коричневый", new String[] { "brown", "cocoa", "coffee" }),
+    DARK_GREEN(ID.DARK_GREEN, "Темно-синий", new String[] { "green", "darkgreen", "cactusgreen", "cactigreen" }),
+    RED(ID.RED, "Красный", "red"),
+    BLACK(ID.BLACK, "Черный", "black");
 
     public static final class ID {
         public static final int WHITE = 0;

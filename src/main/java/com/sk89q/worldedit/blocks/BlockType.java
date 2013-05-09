@@ -181,19 +181,19 @@ public enum BlockType {
     WOODEN_BUTTON(BlockID.WOODEN_BUTTON, "Деревянная кнопка", "woodbutton", "woodenbutton"),
     HEAD(BlockID.HEAD, "Голова", "head", "headmount", "mount"),
     ANVIL(BlockID.ANVIL, "Наковальня", "anvil", "blacksmith"),
-    TRAPPED_CHEST(BlockID.TRAPPED_CHEST, "Trapped Chest", "trappedchest", "redstonechest"),
-    PRESSURE_PLATE_LIGHT(BlockID.PRESSURE_PLATE_LIGHT, "Weighted Pressure Plate (Light)", "lightpressureplate"),
-    PRESSURE_PLATE_HEAVY(BlockID.PRESSURE_PLATE_HEAVY, "Weighted Pressure Plate (Heavy)", "heavypressureplate"),
-    COMPARATOR_OFF(BlockID.COMPARATOR_OFF, "Redstone Comparator (inactive)", "redstonecomparator", "comparator"),
-    COMPARATOR_ON(BlockID.COMPARATOR_ON, "Redstone Comparator (active)", "redstonecomparatoron", "comparatoron"),
-    DAYLIGHT_SENSOR(BlockID.DAYLIGHT_SENSOR, "Daylight Sesnor", "daylightsensor", "lightsensor"),
-    REDSTONE_BLOCK(BlockID.REDSTONE_BLOCK, "Block of Redstone", "redstoneblock", "blockofredstone"),
-    QUARTZ_ORE(BlockID.QUARTZ_ORE, "Nether Quartz Ore", "quartzore", "netherquartzore"),
-    HOPPER(BlockID.HOPPER, "Hopper", "hopper"),
-    QUARTZ_BLOCK(BlockID.QUARTZ_BLOCK, "Block of Quartz", "quartzblock", "quartz"),
-    QUARTZ_STAIRS(BlockID.QUARTZ_STAIRS, "Quartz Stairs", "quartzstairs"),
-    ACTIVATOR_RAIL(BlockID.ACTIVATOR_RAIL, "Activator Rail", "activatorrail", "tntrail", "activatortrack"),
-    DROPPER(BlockID.DROPPER, "Dropper", "dropper");
+    TRAPPED_CHEST(BlockID.TRAPPED_CHEST, "Сундук-ловушка", "trappedchest", "redstonechest"),
+    PRESSURE_PLATE_LIGHT(BlockID.PRESSURE_PLATE_LIGHT, "Утяжелённая нажимная пластина (Лёгкая)", "lightpressureplate"),
+    PRESSURE_PLATE_HEAVY(BlockID.PRESSURE_PLATE_HEAVY, "Утяжелённая нажимная пластина (Тяжёлая)", "heavypressureplate"),
+    COMPARATOR_OFF(BlockID.COMPARATOR_OFF, "Компаратор (не активный)", "redstonecomparator", "comparator"),
+    COMPARATOR_ON(BlockID.COMPARATOR_ON, "Компаратор (активный)", "redstonecomparatoron", "comparatoron"),
+    DAYLIGHT_SENSOR(BlockID.DAYLIGHT_SENSOR, "Датчик дневного света", "daylightsensor", "lightsensor"),
+    REDSTONE_BLOCK(BlockID.REDSTONE_BLOCK, "Блок красного камня", "redstoneblock", "blockofredstone"),
+    QUARTZ_ORE(BlockID.QUARTZ_ORE, "Кварцевая руда Нижнего Мира", "quartzore", "netherquartzore"),
+    HOPPER(BlockID.HOPPER, "Загрузочная воронка", "hopper"),
+    QUARTZ_BLOCK(BlockID.QUARTZ_BLOCK, "Блок кварца", "quartzblock", "quartz"),
+    QUARTZ_STAIRS(BlockID.QUARTZ_STAIRS, "Кварцевые ступеньки", "quartzstairs"),
+    ACTIVATOR_RAIL(BlockID.ACTIVATOR_RAIL, "Активирующие рельсы", "activatorrail", "tntrail", "activatortrack"),
+    DROPPER(BlockID.DROPPER, "Выбрасыватель", "dropper");
 
     /**
      * Stores a map of the IDs for fast access.

@@ -1228,7 +1228,7 @@ public class WorldEdit {
             if (pos != null) {
                 player.findFreePosition(pos);
             } else {
-                player.printError("На указателе нет сблока (или он слишком далеко)!");
+                player.printError("На указателе нет блока (или он слишком далеко)!");
             }
             return true;
         }
