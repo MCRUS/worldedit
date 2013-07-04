@@ -19,7 +19,6 @@
 package com.sk89q.worldedit;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Deque;
 import java.util.HashMap;
@@ -225,9 +224,9 @@ public class EditSession {
                 }
             }
         }
-        
+
         boolean result;
-        
+
         if (type == 0) {
             if (fastMode) {
                 result = world.setBlockTypeFast(pt, 0);
@@ -237,7 +236,7 @@ public class EditSession {
         } else {
             result = world.setBlock(pt, block, !fastMode);
         }
-        
+
         return result;
     }
 
@@ -534,18 +533,6 @@ public class EditSession {
         return countBlocks(region, passOn);
     }
 
-    private static boolean containsFuzzy(Collection<BaseBlock> collection, Object o) {
-        // allow -1 data in the searchBlocks to match any type
-        for (BaseBlock b : collection) {
-            if (o instanceof BaseBlock) {
-                if (b.equalsFuzzy((BaseBlock) o)) {
-                    return true;
-                }
-            }
-        }
-        return false;
-    }
-
     /**
      * Count the number of blocks of a list of types in a region.
      *
@@ -555,6 +542,22 @@ public class EditSession {
      */
     public int countBlocks(Region region, Set<BaseBlock> searchBlocks) {
         int count = 0;
+
+        // allow -1 data in the searchBlocks to match any type
+        Set<BaseBlock> newSet = new HashSet<BaseBlock>() {
+            @Override
+            public boolean contains(Object o) {
+                for (BaseBlock b : this.toArray(new BaseBlock[this.size()])) {
+                    if (o instanceof BaseBlock) {
+                        if (b.equalsFuzzy((BaseBlock) o)) {
+                            return true;
+                        }
+                    }
+                }
+                return false;
+            }
+        };
+        newSet.addAll(searchBlocks);
 
         if (region instanceof CuboidRegion) {
             // Doing this for speed
@@ -574,7 +577,7 @@ public class EditSession {
                         Vector pt = new Vector(x, y, z);
 
                         BaseBlock compare = new BaseBlock(getBlockType(pt), getBlockData(pt));
-                        if (containsFuzzy(searchBlocks, compare)) {
+                        if (newSet.contains(compare)) {
                             ++count;
                         }
                     }
@@ -583,7 +586,7 @@ public class EditSession {
         } else {
             for (Vector pt : region) {
                 BaseBlock compare = new BaseBlock(getBlockType(pt), getBlockData(pt));
-                if (containsFuzzy(searchBlocks, compare)) {
+                if (newSet.contains(compare)) {
                     ++count;
                 }
             }
@@ -619,8 +622,8 @@ public class EditSession {
     public int getHighestTerrainBlock(int x, int z, int minY, int maxY, boolean naturalOnly) {
         for (int y = maxY; y >= minY; --y) {
             Vector pt = new Vector(x, y, z);
-            BaseBlock block = getBlock(pt);
-            if (naturalOnly ? BlockType.isNaturalTerrainBlock(block) : !BlockType.canPassThrough(block)) {
+            int id = getBlockType(pt);
+            if (naturalOnly ? BlockType.isNaturalTerrainBlock(id) : !BlockType.canPassThrough(id)) {
                 return y;
             }
         }
@@ -749,15 +752,15 @@ public class EditSession {
                     final int data = baseBlock.getData();
 
                     switch (type) {
-                    case BlockID.WOODEN_DOOR:
-                    case BlockID.IRON_DOOR:
-                        if ((data & 0x8) == 0) {
-                            // Deal with lower door halves being attached to the floor AND the upper half
-                            BlockVector upperBlock = current.add(0, 1, 0).toBlockVector();
-                            if (blocks.contains(upperBlock) && !walked.contains(upperBlock)) {
-                                walked.addFirst(upperBlock);
+                        case BlockID.WOODEN_DOOR:
+                        case BlockID.IRON_DOOR:
+                            if ((data & 0x8) == 0) {
+                                // Deal with lower door halves being attached to the floor AND the upper half
+                                BlockVector upperBlock = current.add(0, 1, 0).toBlockVector();
+                                if (blocks.contains(upperBlock) && !walked.contains(upperBlock)) {
+                                    walked.addFirst(upperBlock);
+                                }
                             }
-                        }
                     }
 
                     final PlayerDirection attachment = BlockType.getAttachment(type, data);
@@ -810,7 +813,7 @@ public class EditSession {
      * @throws MaxChangedBlocksException
      */
     public int fillXZ(Vector origin, BaseBlock block, double radius, int depth,
-            boolean recursive) throws MaxChangedBlocksException {
+                      boolean recursive) throws MaxChangedBlocksException {
 
         int affected = 0;
         int originX = origin.getBlockX();
@@ -915,7 +918,7 @@ public class EditSession {
      * @throws MaxChangedBlocksException
      */
     public int fillXZ(Vector origin, Pattern pattern, double radius, int depth,
-            boolean recursive) throws MaxChangedBlocksException {
+                      boolean recursive) throws MaxChangedBlocksException {
 
         int affected = 0;
         int originX = origin.getBlockX();
@@ -1746,8 +1749,8 @@ public class EditSession {
 
                     boolean isTransformable =
                             blockType == BlockID.GRASS
-                            || blockType == BlockID.DIRT
-                            || blockType == BlockID.STONE;
+                                    || blockType == BlockID.DIRT
+                                    || blockType == BlockID.STONE;
 
                     // Still searching for the top block
                     if (level == -1) {
@@ -1792,7 +1795,7 @@ public class EditSession {
      * @throws MaxChangedBlocksException
      */
     public int stackCuboidRegion(Region region, Vector dir, int count,
-            boolean copyAir) throws MaxChangedBlocksException {
+                                 boolean copyAir) throws MaxChangedBlocksException {
         int affected = 0;
 
         Vector min = region.getMinimumPoint();
@@ -1844,7 +1847,7 @@ public class EditSession {
      * @throws MaxChangedBlocksException
      */
     public int moveCuboidRegion(Region region, Vector dir, int distance,
-            boolean copyAir, BaseBlock replace)
+                                boolean copyAir, BaseBlock replace)
             throws MaxChangedBlocksException {
         int affected = 0;
 
@@ -2127,15 +2130,15 @@ public class EditSession {
     }
 
     /**
-    * Makes a sphere.
-    *
-    * @param pos Center of the sphere or ellipsoid
-    * @param block The block pattern to use
-    * @param radius The sphere's radius
-    * @param filled If false, only a shell will be generated.
-    * @return number of blocks changed
-    * @throws MaxChangedBlocksException
-    */
+     * Makes a sphere.
+     *
+     * @param pos Center of the sphere or ellipsoid
+     * @param block The block pattern to use
+     * @param radius The sphere's radius
+     * @param filled If false, only a shell will be generated.
+     * @return number of blocks changed
+     * @throws MaxChangedBlocksException
+     */
     public int makeSphere(Vector pos, Pattern block, double radius, boolean filled) throws MaxChangedBlocksException {
         return makeSphere(pos, block, radius, radius, radius, filled);
     }
@@ -2247,7 +2250,7 @@ public class EditSession {
      * @throws MaxChangedBlocksException
      */
     public int makePyramid(Vector pos, Pattern block, int size,
-            boolean filled) throws MaxChangedBlocksException {
+                           boolean filled) throws MaxChangedBlocksException {
         int affected = 0;
 
         int height = size;
@@ -2311,23 +2314,23 @@ public class EditSession {
                     int id = getBlockType(pt);
 
                     switch (id) {
-                    case BlockID.ICE:
-                        if (setBlock(pt, water)) {
-                            ++affected;
-                        }
-                        break;
+                        case BlockID.ICE:
+                            if (setBlock(pt, water)) {
+                                ++affected;
+                            }
+                            break;
 
-                    case BlockID.SNOW:
-                        if (setBlock(pt, air)) {
-                            ++affected;
-                        }
-                        break;
+                        case BlockID.SNOW:
+                            if (setBlock(pt, air)) {
+                                ++affected;
+                            }
+                            break;
 
-                    case BlockID.AIR:
-                        continue;
+                        case BlockID.AIR:
+                            continue;
 
-                    default:
-                        break;
+                        default:
+                            break;
                     }
 
                     break;
@@ -2431,27 +2434,27 @@ public class EditSession {
 
                 loop: for (int y = world.getMaxY(); y >= 1; --y) {
                     final Vector pt = new Vector(x, y, z);
-                    final BaseBlock block = getBlock(pt);
+                    final int id = getBlockType(pt);
 
-                    switch (block.getId()) {
-                    case BlockID.DIRT:
-                        if (setBlock(pt, grass)) {
-                            ++affected;
-                        }
-                        break loop;
-
-                    case BlockID.WATER:
-                    case BlockID.STATIONARY_WATER:
-                    case BlockID.LAVA:
-                    case BlockID.STATIONARY_LAVA:
-                        // break on liquids...
-                        break loop;
-
-                    default:
-                        // ...and all non-passable blocks
-                        if (!BlockType.canPassThrough(block)) {
+                    switch (id) {
+                        case BlockID.DIRT:
+                            if (setBlock(pt, grass)) {
+                                ++affected;
+                            }
                             break loop;
-                        }
+
+                        case BlockID.WATER:
+                        case BlockID.STATIONARY_WATER:
+                        case BlockID.LAVA:
+                        case BlockID.STATIONARY_LAVA:
+                            // break on liquids...
+                            break loop;
+
+                        default:
+                            // ...and all non-passable blocks
+                            if (!BlockType.canPassThrough(id)) {
+                                break loop;
+                            }
                     }
                 }
             }
@@ -2507,45 +2510,45 @@ public class EditSession {
         BaseBlock log = new BaseBlock(BlockID.LOG);
 
         switch (t) {
-        case 0:
-            if (prng.nextBoolean()) {
-                makePumpkinPatchVine(basePos, pos.add(1, 0, 0));
-            }
-            if (prng.nextBoolean()) {
-                setBlockIfAir(pos.add(1, h, -1), log);
-            }
-            setBlockIfAir(pos.add(0, 0, -1), new BaseBlock(BlockID.PUMPKIN, prng.nextInt(4)));
-            break;
+            case 0:
+                if (prng.nextBoolean()) {
+                    makePumpkinPatchVine(basePos, pos.add(1, 0, 0));
+                }
+                if (prng.nextBoolean()) {
+                    setBlockIfAir(pos.add(1, h, -1), log);
+                }
+                setBlockIfAir(pos.add(0, 0, -1), new BaseBlock(BlockID.PUMPKIN, prng.nextInt(4)));
+                break;
 
-        case 1:
-            if (prng.nextBoolean()) {
-                makePumpkinPatchVine(basePos, pos.add(0, 0, 1));
-            }
-            if (prng.nextBoolean()) {
-                setBlockIfAir(pos.add(1, h, 0), log);
-            }
-            setBlockIfAir(pos.add(1, 0, 1), new BaseBlock(BlockID.PUMPKIN, prng.nextInt(4)));
-            break;
+            case 1:
+                if (prng.nextBoolean()) {
+                    makePumpkinPatchVine(basePos, pos.add(0, 0, 1));
+                }
+                if (prng.nextBoolean()) {
+                    setBlockIfAir(pos.add(1, h, 0), log);
+                }
+                setBlockIfAir(pos.add(1, 0, 1), new BaseBlock(BlockID.PUMPKIN, prng.nextInt(4)));
+                break;
 
-        case 2:
-            if (prng.nextBoolean()) {
-                makePumpkinPatchVine(basePos, pos.add(0, 0, -1));
-            }
-            if (prng.nextBoolean()) {
-                setBlockIfAir(pos.add(-1, h, 0), log);
-            }
-            setBlockIfAir(pos.add(-1, 0, 1), new BaseBlock(BlockID.PUMPKIN, prng.nextInt(4)));
-            break;
+            case 2:
+                if (prng.nextBoolean()) {
+                    makePumpkinPatchVine(basePos, pos.add(0, 0, -1));
+                }
+                if (prng.nextBoolean()) {
+                    setBlockIfAir(pos.add(-1, h, 0), log);
+                }
+                setBlockIfAir(pos.add(-1, 0, 1), new BaseBlock(BlockID.PUMPKIN, prng.nextInt(4)));
+                break;
 
-        case 3:
-            if (prng.nextBoolean()) {
-                makePumpkinPatchVine(basePos, pos.add(-1, 0, 0));
-            }
-            if (prng.nextBoolean()) {
-                setBlockIfAir(pos.add(-1, h, -1), log);
-            }
-            setBlockIfAir(pos.add(-1, 0, -1), new BaseBlock(BlockID.PUMPKIN, prng.nextInt(4)));
-            break;
+            case 3:
+                if (prng.nextBoolean()) {
+                    makePumpkinPatchVine(basePos, pos.add(-1, 0, 0));
+                }
+                if (prng.nextBoolean()) {
+                    setBlockIfAir(pos.add(-1, h, -1), log);
+                }
+                setBlockIfAir(pos.add(-1, 0, -1), new BaseBlock(BlockID.PUMPKIN, prng.nextInt(4)));
+                break;
         }
     }
 
@@ -2602,7 +2605,7 @@ public class EditSession {
      * @throws MaxChangedBlocksException
      */
     public int makeForest(Vector basePos, int size, double density,
-            TreeGenerator treeGenerator) throws MaxChangedBlocksException {
+                          TreeGenerator treeGenerator) throws MaxChangedBlocksException {
         int affected = 0;
 
         for (int x = basePos.getBlockX() - size; x <= basePos.getBlockX()
@@ -2826,12 +2829,12 @@ public class EditSession {
     }
 
     Vector[] recurseDirections = {
-        PlayerDirection.NORTH.vector(),
-        PlayerDirection.EAST.vector(),
-        PlayerDirection.SOUTH.vector(),
-        PlayerDirection.WEST.vector(),
-        PlayerDirection.UP.vector(),
-        PlayerDirection.DOWN.vector(),
+            PlayerDirection.NORTH.vector(),
+            PlayerDirection.EAST.vector(),
+            PlayerDirection.SOUTH.vector(),
+            PlayerDirection.WEST.vector(),
+            PlayerDirection.UP.vector(),
+            PlayerDirection.DOWN.vector(),
     };
 
     /**
@@ -2919,7 +2922,7 @@ public class EditSession {
 
         while (!queue.isEmpty()) {
             final BlockVector current = queue.removeFirst();
-            if (!BlockType.canPassThrough(getBlock(current))) {
+            if (!BlockType.canPassThrough(getBlockType(current))) {
                 continue;
             }
 
