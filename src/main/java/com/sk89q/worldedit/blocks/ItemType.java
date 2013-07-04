@@ -194,6 +194,11 @@ public enum ItemType {
     QUARTZ_STAIRS(BlockID.QUARTZ_STAIRS, "Quartz Stairs", "quartzstairs"),
     ACTIVATOR_RAIL(BlockID.ACTIVATOR_RAIL, "Activator Rail", "activatorrail", "tntrail", "activatortrack"),
     DROPPER(BlockID.DROPPER, "Dropper", "dropper"),
+    STAINED_CLAY(BlockID.STAINED_CLAY, "Stained clay", "stainedclay"),
+    HAY_BLOCK(BlockID.HAY_BLOCK, "Hay Block", "hayblock", "haybale", "wheatbale"),
+    CARPET(BlockID.CARPET, "Carpet", "carpet"),
+    HARDENED_CLAY(BlockID.HARDENED_CLAY, "Hardened Clay", "hardenedclay", "hardclay"),
+    COAL_BLOCK(BlockID.COAL_BLOCK, "Block of Coal", "coalblock", "blockofcoal"),
 
     // Items
     IRON_SHOVEL(ItemID.IRON_SHOVEL, "Железная лопата", "ironshovel"),
@@ -574,6 +579,9 @@ public enum ItemType {
         shouldNotStack.add(ItemID.ENCHANTED_BOOK);
         shouldNotStack.add(ItemID.TNT_MINECART);
         shouldNotStack.add(ItemID.HOPPER_MINECART);
+        shouldNotStack.add(ItemID.HORSE_ARMOR_IRON);
+        shouldNotStack.add(ItemID.HORSE_ARMOR_GOLD);
+        shouldNotStack.add(ItemID.HORSE_ARMOR_DIAMOND);
         shouldNotStack.add(ItemID.DISC_13);
         shouldNotStack.add(ItemID.DISC_CAT);
         shouldNotStack.add(ItemID.DISC_BLOCKS);
@@ -618,6 +626,8 @@ public enum ItemType {
         usesDamageValue.add(BlockID.COBBLESTONE_WALL);
         usesDamageValue.add(BlockID.ANVIL);
         usesDamageValue.add(BlockID.QUARTZ_BLOCK);
+        usesDamageValue.add(BlockID.STAINED_CLAY);
+        usesDamageValue.add(BlockID.CARPET);
 
         usesDamageValue.add(ItemID.COAL);
         usesDamageValue.add(ItemID.INK_SACK);

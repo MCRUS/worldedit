@@ -28,7 +28,6 @@ import java.util.Set;
 
 import com.sk89q.util.StringUtil;
 import com.sk89q.worldedit.PlayerDirection;
-import com.sk89q.worldedit.foundation.Block;
 
 /**
  * Block types.
@@ -194,7 +193,12 @@ public enum BlockType {
     QUARTZ_BLOCK(BlockID.QUARTZ_BLOCK, "Блок кварца", "quartzblock", "quartz"),
     QUARTZ_STAIRS(BlockID.QUARTZ_STAIRS, "Кварцевые ступеньки", "quartzstairs"),
     ACTIVATOR_RAIL(BlockID.ACTIVATOR_RAIL, "Активирующие рельсы", "activatorrail", "tntrail", "activatortrack"),
-    DROPPER(BlockID.DROPPER, "Выбрасыватель", "dropper");
+    DROPPER(BlockID.DROPPER, "Выбрасыватель", "dropper"),
+    STAINED_CLAY(BlockID.STAINED_CLAY, "Stained clay", "stainedclay"),
+    HAY_BLOCK(BlockID.HAY_BLOCK, "Hay Block", "hayblock", "haybale", "wheatbale"),
+    CARPET(BlockID.CARPET, "Carpet", "carpet"),
+    HARDENED_CLAY(BlockID.HARDENED_CLAY, "Hardened Clay", "hardenedclay", "hardclay"),
+    COAL_BLOCK(BlockID.COAL_BLOCK, "Block of Coal", "coalblock", "blockofcoal");
 
     /**
      * Stores a map of the IDs for fast access.
@@ -350,6 +354,7 @@ public enum BlockType {
         shouldPlaceLast.add(BlockID.COMPARATOR_OFF);
         shouldPlaceLast.add(BlockID.COMPARATOR_ON);
         shouldPlaceLast.add(BlockID.ACTIVATOR_RAIL);
+        shouldPlaceLast.add(BlockID.CARPET);
     }
 
     /**
@@ -453,6 +458,7 @@ public enum BlockType {
         canPassThrough.add(BlockID.COMPARATOR_OFF);
         canPassThrough.add(BlockID.COMPARATOR_ON);
         canPassThrough.add(BlockID.ACTIVATOR_RAIL);
+        canPassThrough.add(BlockID.CARPET);
     }
 
 
@@ -693,6 +699,9 @@ public enum BlockType {
         usesData.add(BlockID.ACTIVATOR_RAIL);
         usesData.add(BlockID.DROPPER);
         usesData.add(BlockID.HOPPER);
+        usesData.add(BlockID.STAINED_CLAY);
+        usesData.add(BlockID.HAY_BLOCK);
+        usesData.add(BlockID.CARPET);
     }
 
     /**
@@ -1114,6 +1123,7 @@ public enum BlockType {
         isTranslucent.add(BlockID.HOPPER);
         isTranslucent.add(BlockID.QUARTZ_STAIRS);
         isTranslucent.add(BlockID.ACTIVATOR_RAIL);
+        isTranslucent.add(BlockID.CARPET);
     }
 
     /**
@@ -1309,6 +1319,11 @@ public enum BlockType {
         addIdentity(BlockID.ACTIVATOR_RAIL); // rule 1
         addIdentity(BlockID.DROPPER); // rule 1
 
+        addIdentities(BlockID.STAINED_CLAY, 16); // rule 1
+        addIdentity(BlockID.HAY_BLOCK); // rule 1
+        addIdentities(BlockID.CARPET, 16); // rule 1
+        addIdentity(BlockID.HARDENED_CLAY); // rule 1
+        addIdentity(BlockID.COAL_BLOCK); // rule 1
     }
 
     /**
@@ -1536,7 +1551,13 @@ public enum BlockType {
             return new BaseItemStack(ItemID.NETHER_QUARTZ);
 
         case BlockID.QUARTZ_BLOCK:
-            return new BaseItemStack(BlockID.QUARTZ_BLOCK, (data >= 2 ? 2 : data));
+            return new BaseItemStack(BlockID.QUARTZ_BLOCK, 1, (data >= 2 ? 2 : data));
+
+        case BlockID.LOG:
+            return new BaseItemStack(BlockID.LOG, 1, (short) (data & 0x3)); // strip orientation data
+
+        case BlockID.HAY_BLOCK:
+            return new BaseItemStack(BlockID.HAY_BLOCK); // strip orientation data
 
         case BlockID.WOODEN_STAIRS:
         case BlockID.COBBLESTONE_STAIRS:
@@ -1650,6 +1671,7 @@ public enum BlockType {
         nonDataAttachments.put(BlockID.COMPARATOR_OFF, PlayerDirection.DOWN);
         nonDataAttachments.put(BlockID.COMPARATOR_ON, PlayerDirection.DOWN);
         nonDataAttachments.put(BlockID.ACTIVATOR_RAIL, PlayerDirection.DOWN);
+        nonDataAttachments.put(BlockID.CARPET, PlayerDirection.DOWN);
     }
 
     /**
