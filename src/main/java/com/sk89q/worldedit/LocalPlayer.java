@@ -22,7 +22,6 @@ package com.sk89q.worldedit;
 import java.io.File;
 
 import com.sk89q.worldedit.bags.BlockBag;
-import com.sk89q.worldedit.blocks.BaseBlock;
 import com.sk89q.worldedit.blocks.BlockID;
 import com.sk89q.worldedit.blocks.BlockType;
 import com.sk89q.worldedit.blocks.ItemID;
@@ -80,7 +79,7 @@ public abstract class LocalPlayer {
         byte free = 0;
 
         while (y <= world.getMaxY() + 2) {
-            if (BlockType.canPassThrough(world.getBlock(new Vector(x, y, z)))) {
+            if (BlockType.canPassThrough(world.getBlockType(new Vector(x, y, z)))) {
                 ++free;
             } else {
                 free = 0;
@@ -114,9 +113,10 @@ public abstract class LocalPlayer {
 
         while (y >= 0) {
             final Vector pos = new Vector(x, y, z);
-            final BaseBlock block = world.getBlock(pos);
-            if (!BlockType.canPassThrough(block)) {
-                setPosition(new Vector(x + 0.5, y + BlockType.centralTopLimit(block), z + 0.5));
+            final int id = world.getBlockType(pos);
+            if (!BlockType.canPassThrough(id)) {
+                final int data = world.getBlockData(pos);
+                setPosition(new Vector(x + 0.5, y + BlockType.centralTopLimit(id, data), z + 0.5));
                 return;
             }
 
@@ -140,17 +140,17 @@ public abstract class LocalPlayer {
      * @return true if a spot was found
      */
     public boolean ascendLevel() {
-        final WorldVector pos = getBlockIn();
-        final int x = pos.getBlockX();
+        Vector pos = getBlockIn();
+        int x = pos.getBlockX();
         int y = Math.max(0, pos.getBlockY());
-        final int z = pos.getBlockZ();
-        final LocalWorld world = pos.getWorld();
+        int z = pos.getBlockZ();
+        LocalWorld world = getPosition().getWorld();
 
         byte free = 0;
         byte spots = 0;
 
         while (y <= world.getMaxY() + 2) {
-            if (BlockType.canPassThrough(world.getBlock(new Vector(x, y, z)))) {
+            if (BlockType.canPassThrough(world.getBlockType(new Vector(x, y, z)))) {
                 ++free;
             } else {
                 free = 0;
@@ -159,16 +159,14 @@ public abstract class LocalPlayer {
             if (free == 2) {
                 ++spots;
                 if (spots == 2) {
-                    final Vector platform = new Vector(x, y - 2, z);
-                    final BaseBlock block = world.getBlock(platform);
-                    final int type = block.getId();
+                    int type = world.getBlockType(new Vector(x, y - 2, z));
 
                     // Don't get put in lava!
                     if (type == BlockID.LAVA || type == BlockID.STATIONARY_LAVA) {
                         return false;
                     }
 
-                    setPosition(platform.add(0.5, BlockType.centralTopLimit(block), 0.5));
+                    setPosition(new Vector(x + 0.5, y - 1, z + 0.5));
                     return true;
                 }
             }
@@ -185,16 +183,16 @@ public abstract class LocalPlayer {
      * @return true if a spot was found
      */
     public boolean descendLevel() {
-        final WorldVector pos = getBlockIn();
-        final int x = pos.getBlockX();
+        Vector pos = getBlockIn();
+        int x = pos.getBlockX();
         int y = Math.max(0, pos.getBlockY() - 1);
-        final int z = pos.getBlockZ();
-        final LocalWorld world = pos.getWorld();
+        int z = pos.getBlockZ();
+        LocalWorld world = getPosition().getWorld();
 
         byte free = 0;
 
         while (y >= 1) {
-            if (BlockType.canPassThrough(world.getBlock(new Vector(x, y, z)))) {
+            if (BlockType.canPassThrough(world.getBlockType(new Vector(x, y, z)))) {
                 ++free;
             } else {
                 free = 0;
@@ -205,14 +203,12 @@ public abstract class LocalPlayer {
                 // lightly and also check to see if there's something to
                 // stand upon
                 while (y >= 0) {
-                    final Vector platform = new Vector(x, y, z);
-                    final BaseBlock block = world.getBlock(platform);
-                    final int type = block.getId();
+                    int type = world.getBlockType(new Vector(x, y, z));
 
                     // Don't want to end up in lava
                     if (type != BlockID.AIR && type != BlockID.LAVA && type != BlockID.STATIONARY_LAVA) {
                         // Found a block!
-                        setPosition(platform.add(0.5, BlockType.centralTopLimit(block), 0.5));
+                        setPosition(new Vector(x + 0.5, y + 1, z + 0.5));
                         return true;
                     }
 
@@ -249,7 +245,7 @@ public abstract class LocalPlayer {
 
         while (y <= world.getMaxY()) {
             // Found a ceiling!
-            if (!BlockType.canPassThrough(world.getBlock(new Vector(x, y, z)))) {
+            if (!BlockType.canPassThrough(world.getBlockType(new Vector(x, y, z)))) {
                 int platformY = Math.max(initialY, y - 3 - clearance);
                 world.setBlockType(new Vector(x, platformY, z), BlockID.GLASS);
                 setPosition(new Vector(x + 0.5, platformY + 1, z + 0.5));
@@ -278,7 +274,7 @@ public abstract class LocalPlayer {
         LocalWorld world = getPosition().getWorld();
 
         while (y <= world.getMaxY() + 2) {
-            if (!BlockType.canPassThrough(world.getBlock(new Vector(x, y, z)))) {
+            if (!BlockType.canPassThrough(world.getBlockType(new Vector(x, y, z)))) {
                 break; // Hit something
             } else if (y > maxY + 1) {
                 break;
@@ -492,7 +488,7 @@ public abstract class LocalPlayer {
         boolean inFree = false;
 
         while ((block = hitBlox.getNextBlock()) != null) {
-            boolean free = BlockType.canPassThrough(world.getBlock(block));
+            boolean free = BlockType.canPassThrough(world.getBlockType(block));
 
             if (firstBlock) {
                 firstBlock = false;
