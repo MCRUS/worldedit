@@ -34,10 +34,10 @@ import com.sk89q.worldedit.blocks.BlockType;
 /**
  * This class uses an inefficient method to figure out what block a player
  * is looking towards.
- * 
+ *
  * Originally written by toi. It was ported to WorldEdit and trimmed down by
  * sk89q. Thanks to Raphfrk for optimization of toi's original class.
- * 
+ *
  * @author toi
  */
 public class TargetBlock {
@@ -51,7 +51,7 @@ public class TargetBlock {
 
     /**
      * Constructor requiring a player, uses default values
-     * 
+     *
      * @param player player to work with
      */
     public TargetBlock(LocalPlayer player) {
@@ -62,7 +62,7 @@ public class TargetBlock {
 
     /**
      * Constructor requiring a player, max distance and a checking distance
-     * 
+     *
      * @param player LocalPlayer to work with
      * @param maxDistance how far it checks for blocks
      * @param checkDistance how often to check for blocks, the smaller the more precise
@@ -75,7 +75,7 @@ public class TargetBlock {
 
     /**
      * Set the values, all constructors uses this function
-     * 
+     *
      * @param loc location of the view
      * @param xRotation
      * @param yRotation
@@ -84,7 +84,7 @@ public class TargetBlock {
      * @param checkDistance how often to check for blocks, the smaller the more precise
      */
     private void setValues(Vector loc, double xRotation, double yRotation,
-            int maxDistance, double viewHeight, double checkDistance) {
+                           int maxDistance, double viewHeight, double checkDistance) {
         this.maxDistance = maxDistance;
         this.checkDistance = checkDistance;
         this.curDistance = 0;
@@ -94,8 +94,8 @@ public class TargetBlock {
         double h = (checkDistance * Math.cos(Math.toRadians(yRotation)));
 
         offset = new Vector((h * Math.cos(Math.toRadians(xRotation))),
-                            (checkDistance * Math.sin(Math.toRadians(yRotation))),
-                            (h * Math.sin(Math.toRadians(xRotation))));
+                (checkDistance * Math.sin(Math.toRadians(yRotation))),
+                (h * Math.sin(Math.toRadians(xRotation))));
 
         targetPosDouble = loc.add(0, viewHeight, 0);
         targetPos = targetPosDouble.toBlockPoint();
@@ -105,7 +105,7 @@ public class TargetBlock {
     /**
      * Returns any block at the sight. Returns null if out of range or if no
      * viable target was found. Will try to return the last valid air block it finds.
-     * 
+     *
      * @return Block
      */
     public BlockWorldVector getAnyTargetBlock() {
@@ -130,7 +130,7 @@ public class TargetBlock {
     /**
      * Returns the block at the sight. Returns null if out of range or if no
      * viable target was found
-     * 
+     *
      * @return Block
      */
     public BlockWorldVector getTargetBlock() {
@@ -141,17 +141,17 @@ public class TargetBlock {
     /**
      * Returns the block at the sight. Returns null if out of range or if no
      * viable target was found
-     * 
+     *
      * @return Block
      */
     public BlockWorldVector getSolidTargetBlock() {
-        while (getNextBlock() != null && BlockType.canPassThrough(world.getBlock(getCurrentBlock()))) ;
+        while (getNextBlock() != null && BlockType.canPassThrough(world.getBlockType(getCurrentBlock()))) ;
         return getCurrentBlock();
     }
 
     /**
      * Get next block
-     * 
+     *
      * @return next block position
      */
     public BlockWorldVector getNextBlock() {
@@ -160,8 +160,8 @@ public class TargetBlock {
             curDistance += checkDistance;
 
             targetPosDouble = offset.add(targetPosDouble.getX(),
-                                         targetPosDouble.getY(),
-                                         targetPosDouble.getZ());
+                    targetPosDouble.getY(),
+                    targetPosDouble.getZ());
             targetPos = targetPosDouble.toBlockPoint();
         } while (curDistance <= maxDistance
                 && targetPos.getBlockX() == prevPos.getBlockX()
@@ -177,7 +177,7 @@ public class TargetBlock {
 
     /**
      * Returns the current block along the line of vision
-     * 
+     *
      * @return block position
      */
     public BlockWorldVector getCurrentBlock() {
@@ -190,7 +190,7 @@ public class TargetBlock {
 
     /**
      * Returns the previous block in the aimed path
-     * 
+     *
      * @return block position
      */
     public BlockWorldVector getPreviousBlock() {
