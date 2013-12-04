@@ -65,6 +65,9 @@ public class YAMLConfiguration extends LocalConfiguration {
         maxPolygonalPoints = Math.max(-1,
                 config.getInt("limits.max-polygonal-points.maximum", maxPolygonalPoints));
 
+        defaultMaxPolyhedronPoints = Math.max(-1, config.getInt("limits.max-polyhedron-points.default", defaultMaxPolyhedronPoints));
+        maxPolyhedronPoints = Math.max(-1, config.getInt("limits.max-polyhedron-points.maximum", maxPolyhedronPoints));
+
         maxRadius = Math.max(-1, config.getInt("limits.max-radius", maxRadius));
         maxBrushRadius = config.getInt("limits.max-brush-radius", maxBrushRadius);
         maxSuperPickaxeSize = Math.max(1, config.getInt(
@@ -75,9 +78,6 @@ public class YAMLConfiguration extends LocalConfiguration {
 
         disallowedBlocks = new HashSet<Integer>(config.getIntList("limits.disallowed-blocks", null));
         allowedDataCycleBlocks = new HashSet<Integer>(config.getIntList("limits.allowed-data-cycle-blocks", null));
-
-        allowExtraDataValues = config.getBoolean("limits.allow-extra-data-values", false);
-
 
         registerHelp = config.getBoolean("register-help", true);
         logCommands = config.getBoolean("logging.log-commands", logCommands);

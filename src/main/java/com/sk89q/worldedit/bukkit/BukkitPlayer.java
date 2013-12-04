@@ -19,6 +19,8 @@
 
 package com.sk89q.worldedit.bukkit;
 
+import com.sk89q.worldedit.WorldEditException;
+import com.sk89q.worldedit.blocks.BaseBlock;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
@@ -47,6 +49,11 @@ public class BukkitPlayer extends LocalPlayer {
     public int getItemInHand() {
         ItemStack itemStack = player.getItemInHand();
         return itemStack != null ? itemStack.getTypeId() : 0;
+    }
+
+    public BaseBlock getBlockInHand() throws WorldEditException {
+        ItemStack itemStack = player.getItemInHand();
+        return BukkitUtil.toBlock(getWorld(), itemStack);
     }
 
     @Override
@@ -149,5 +156,16 @@ public class BukkitPlayer extends LocalPlayer {
     @Override
     public boolean hasCreativeMode() {
         return player.getGameMode() == GameMode.CREATIVE;
+    }
+
+    @Override
+    public void floatAt(int x, int y, int z, boolean alwaysGlass) {
+        if (alwaysGlass || !player.getAllowFlight()) {
+            super.floatAt(x, y, z, alwaysGlass);
+            return;
+        }
+
+        setPosition(new Vector(x + 0.5, y, z + 0.5));
+        player.setFlying(true);
     }
 }

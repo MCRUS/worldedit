@@ -3,6 +3,7 @@ package com.sk89q.worldedit.forge;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.packet.Packet250CustomPayload;
+import net.minecraft.util.ChatMessageComponent;
 
 import com.sk89q.util.StringUtil;
 import com.sk89q.worldedit.LocalPlayer;
@@ -38,11 +39,11 @@ public class ForgePlayer extends LocalPlayer {
     }
 
     public double getPitch() {
-        return this.player.cameraPitch;
+        return this.player.rotationPitch;
     }
 
     public double getYaw() {
-        return this.player.cameraYaw;
+        return this.player.rotationYaw;
     }
 
     public void giveItem(int type, int amt) {
@@ -60,23 +61,27 @@ public class ForgePlayer extends LocalPlayer {
     }
 
     public void printRaw(String msg) {
-        for (String part : msg.split("\n"))
-            this.player.sendChatToPlayer(msg);
+        for (String part : msg.split("\n")) {
+            this.player.sendChatToPlayer(ChatMessageComponent.createFromText(part));
+        }
     }
 
     public void printDebug(String msg) {
-        for (String part : msg.split("\n"))
-            this.player.sendChatToPlayer("\u00a77" + part);
+        for (String part : msg.split("\n")) {
+            this.player.sendChatToPlayer(ChatMessageComponent.createFromText("\u00a77" + part));
+        }
     }
 
     public void print(String msg) {
-        for (String part : msg.split("\n"))
-            this.player.sendChatToPlayer("\u00a7d" + part);
+        for (String part : msg.split("\n")) {
+            this.player.sendChatToPlayer(ChatMessageComponent.createFromText("\u00a7d" + part));
+        }
     }
 
     public void printError(String msg) {
-        for (String part : msg.split("\n"))
-            this.player.sendChatToPlayer("\u00a7c" + part);
+        for (String part : msg.split("\n")) {
+            this.player.sendChatToPlayer(ChatMessageComponent.createFromText("\u00a7c" + part));
+        }
     }
 
     public void setPosition(Vector pos, float pitch, float yaw) {

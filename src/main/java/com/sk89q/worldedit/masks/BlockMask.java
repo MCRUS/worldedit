@@ -5,14 +5,11 @@ import java.util.HashSet;
 import java.util.Set;
 
 import com.sk89q.worldedit.EditSession;
-import com.sk89q.worldedit.LocalPlayer;
-import com.sk89q.worldedit.LocalSession;
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.blocks.BaseBlock;
 
-public class BlockMask implements Mask {
-
-    protected Set<BaseBlock> blocks;
+public class BlockMask extends AbstractMask {
+    private final Set<BaseBlock> blocks;
 
     public BlockMask() {
         blocks = new HashSet<BaseBlock>();
@@ -35,9 +32,7 @@ public class BlockMask implements Mask {
         blocks.addAll(blocks);
     }
 
-    public void prepare(LocalSession session, LocalPlayer player, Vector target) {
-    }
-
+    @Override
     public boolean matches(EditSession editSession, Vector pos) {
         BaseBlock block = editSession.getBlock(pos);
         return  blocks.contains(block)

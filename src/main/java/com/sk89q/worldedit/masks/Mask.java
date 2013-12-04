@@ -26,7 +26,9 @@ import com.sk89q.worldedit.Vector;
 
 /**
  * Base matcher for the block filtering framework. Implementing classes
- * can be used to filter blocks to set or replace
+ * can be used to filter blocks to set or replace.
+ * <p>
+ * <u>Do NOT</u> implement this interface. Extend {@link AbstractMask} instead.
  *
  * @author sk89q
  */
@@ -39,7 +41,7 @@ public interface Mask {
      * @param player
      * @param target target of the brush, null if not a brush mask
      */
-    public void prepare(LocalSession session, LocalPlayer player, Vector target);
+    void prepare(LocalSession session, LocalPlayer player, Vector target);
 
     /**
      * Given a block position, this method returns true if the block at
@@ -51,5 +53,5 @@ public interface Mask {
      * @param pos
      * @return
      */
-    public boolean matches(EditSession editSession, Vector pos);
+    boolean matches(EditSession editSession, Vector pos);
 }

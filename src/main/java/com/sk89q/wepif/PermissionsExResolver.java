@@ -22,14 +22,12 @@ package com.sk89q.wepif;
 import com.sk89q.util.yaml.YAMLProcessor;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.Server;
-import org.bukkit.entity.Player;
-
+import org.bukkit.permissions.Permissible;
 import ru.tehkode.permissions.PermissionManager;
 import ru.tehkode.permissions.PermissionUser;
 
-public class PermissionsExResolver implements PermissionsResolver {
+public class PermissionsExResolver extends DinnerPermsResolver {
     private final PermissionManager manager;
-    private final Server server;
 
     public static PermissionsResolver factory(Server server, YAMLProcessor config) {
         try {
@@ -46,42 +44,21 @@ public class PermissionsExResolver implements PermissionsResolver {
     }
 
     public PermissionsExResolver(Server server, PermissionManager manager) {
-        this.server = server;
+        super(server);
         this.manager = manager;
-    }
-
-    public void load() {
-
-    }
-
-    public boolean hasPermission(String name, String permission) {
-        Player player = server.getPlayerExact(name);
-        return manager.has(name, permission, player == null ? null : player.getWorld().getName());
     }
 
     public boolean hasPermission(String worldName, String name, String permission) {
         return manager.has(name, permission, worldName);
     }
 
-    public boolean inGroup(String player, String group) {
-        PermissionUser user = manager.getUser(player);
-        if (user == null) {
-            return false;
-        }
-        return user.inGroup(group);
-    }
-
-    public String[] getGroups(String player) {
-        PermissionUser user = manager.getUser(player);
-        if (user == null) {
-            return new String[0];
-        }
-        return user.getGroupsNames();
-    }
-
     public boolean hasPermission(OfflinePlayer player, String permission) {
-        Player onlinePlayer = player.getPlayer();
-        return manager.has(player.getName(), permission, onlinePlayer == null ? null : onlinePlayer.getWorld().getName());
+        Permissible permissible = getPermissible(player);
+        if (permissible == null) {
+            return manager.has(player.getName(), permission, null);
+        } else {
+            return permissible.hasPermission(permission);
+        }
     }
 
     public boolean hasPermission(String worldName, OfflinePlayer player, String permission) {
@@ -89,11 +66,19 @@ public class PermissionsExResolver implements PermissionsResolver {
     }
 
     public boolean inGroup(OfflinePlayer player, String group) {
-        return inGroup(player.getName(), group);
+        return super.inGroup(player, group) || manager.getUser(player.getName()).inGroup(group);
     }
 
     public String[] getGroups(OfflinePlayer player) {
-        return getGroups(player.getName());
+        if (getPermissible(player) == null) {
+            PermissionUser user = manager.getUser(player.getName());
+            if (user == null) {
+                return new String[0];
+            }
+            return user.getGroupsNames();
+        } else {
+            return super.getGroups(player);
+        }
     }
 
     public String getDetectionMessage() {

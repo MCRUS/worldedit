@@ -24,6 +24,12 @@ package com.sk89q.worldedit;
  * @author sk89q
  */
 public class Vector implements Comparable<Vector> {
+    public static final Vector ZERO = new Vector(0, 0, 0);
+    public static final Vector UNIT_X = new Vector(1, 0, 0);
+    public static final Vector UNIT_Y = new Vector(0, 1, 0);
+    public static final Vector UNIT_Z = new Vector(0, 0, 1);
+    public static final Vector ONE = new Vector(1, 1, 1);
+
     protected final double x, y, z;
 
     /**

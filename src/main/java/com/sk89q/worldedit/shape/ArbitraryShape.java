@@ -17,8 +17,12 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-package com.sk89q.worldedit;
+package com.sk89q.worldedit.shape;
 
+import com.sk89q.worldedit.BlockVector;
+import com.sk89q.worldedit.EditSession;
+import com.sk89q.worldedit.MaxChangedBlocksException;
+import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.blocks.BaseBlock;
 import com.sk89q.worldedit.patterns.Pattern;
 import com.sk89q.worldedit.regions.Region;
@@ -30,10 +34,11 @@ import com.sk89q.worldedit.regions.Region;
  * @author TomyLobo
  */
 public abstract class ArbitraryShape {
-    private final Region extent;
+    protected final Region extent;
     private int cacheOffsetX;
     private int cacheOffsetY;
     private int cacheOffsetZ;
+    @SuppressWarnings("FieldCanBeLocal")
     private int cacheSizeX;
     private int cacheSizeY;
     private int cacheSizeZ;
@@ -72,9 +77,9 @@ public abstract class ArbitraryShape {
     /**
      * Override this function to specify the shape to generate.
      *
-     * @param x
-     * @param y
-     * @param z
+     * @param x X coordinate to be queried
+     * @param y Y coordinate to be queried
+     * @param z Z coordinate to be queried
      * @param defaultMaterial The material returned by the pattern for the current block.
      * @return material to place or null to not place anything.
      */
@@ -136,7 +141,7 @@ public abstract class ArbitraryShape {
     /**
      * Generates the shape.
      *
-     * @param editSession
+     * @param editSession The EditSession to use.
      * @param pattern The pattern to generate default materials from.
      * @param hollow Specifies whether to generate a hollow shape.
      * @return number of affected blocks.
@@ -164,38 +169,36 @@ public abstract class ArbitraryShape {
                 continue;
             }
 
-            if (hollow) {
-                boolean draw = false;
-                do {
-                    if (!isInsideCached(x + 1, y, z, pattern)) {
-                        draw = true;
-                        break;
-                    }
-                    if (!isInsideCached(x - 1, y, z, pattern)) {
-                        draw = true;
-                        break;
-                    }
-                    if (!isInsideCached(x, y + 1, z, pattern)) {
-                        draw = true;
-                        break;
-                    }
-                    if (!isInsideCached(x, y - 1, z, pattern)) {
-                        draw = true;
-                        break;
-                    }
-                    if (!isInsideCached(x, y, z + 1, pattern)) {
-                        draw = true;
-                        break;
-                    }
-                    if (!isInsideCached(x, y, z - 1, pattern)) {
-                        draw = true;
-                        break;
-                    }
-                } while (false);
-
-                if (!draw) {
-                    continue;
+            boolean draw = false;
+            do {
+                if (!isInsideCached(x + 1, y, z, pattern)) {
+                    draw = true;
+                    break;
                 }
+                if (!isInsideCached(x - 1, y, z, pattern)) {
+                    draw = true;
+                    break;
+                }
+                if (!isInsideCached(x, y, z + 1, pattern)) {
+                    draw = true;
+                    break;
+                }
+                if (!isInsideCached(x, y, z - 1, pattern)) {
+                    draw = true;
+                    break;
+                }
+                if (!isInsideCached(x, y + 1, z, pattern)) {
+                    draw = true;
+                    break;
+                }
+                if (!isInsideCached(x, y - 1, z, pattern)) {
+                    draw = true;
+                    break;
+                }
+            } while (false);
+
+            if (!draw) {
+                continue;
             }
 
             if (editSession.setBlock(position, material)) {

@@ -73,15 +73,9 @@ public class BrushCommands {
     @CommandPermissions("worldedit.brush.sphere")
     public void sphereBrush(CommandContext args, LocalSession session,
             LocalPlayer player, EditSession editSession) throws WorldEditException {
-        
-        LocalConfiguration config = we.getConfiguration();
 
         double radius = args.argsLength() > 1 ? args.getDouble(1) : 2;
-        if (radius > config.maxBrushRadius) {
-            player.printError("Максимально допустимый радиус кисти: "
-                    + config.maxBrushRadius);
-            return;
-        }
+        we.checkMaxBrushRadius(radius);
 
         BrushTool tool = session.getBrushTool(player.getItemInHand());
         Pattern fill = we.getBlockPattern(player, args.getString(0));
@@ -112,22 +106,12 @@ public class BrushCommands {
     @CommandPermissions("worldedit.brush.cylinder")
     public void cylinderBrush(CommandContext args, LocalSession session,
             LocalPlayer player, EditSession editSession) throws WorldEditException {
-        
-        LocalConfiguration config = we.getConfiguration();
 
         double radius = args.argsLength() > 1 ? args.getDouble(1) : 2;
-        if (radius > config.maxBrushRadius) {
-            player.printError("Максимально допустимый радиус кисти: "
-                    + config.maxBrushRadius);
-            return;
-        }
+        we.checkMaxBrushRadius(radius);
 
         int height = args.argsLength() > 2 ? args.getInteger(2) : 1;
-        if (height > config.maxBrushRadius) {
-            player.printError("Максимально допустимый радиус кисти: "
-                    + config.maxBrushRadius);
-            return;
-        }
+        we.checkMaxBrushRadius(height);
 
         BrushTool tool = session.getBrushTool(player.getItemInHand());
         Pattern fill = we.getBlockPattern(player, args.getString(0));
@@ -158,8 +142,6 @@ public class BrushCommands {
     @CommandPermissions("worldedit.brush.clipboard")
     public void clipboardBrush(CommandContext args, LocalSession session,
             LocalPlayer player, EditSession editSession) throws WorldEditException {
-        
-        LocalConfiguration config = we.getConfiguration();
 
         CuboidClipboard clipboard = session.getClipboard();
 
@@ -170,13 +152,9 @@ public class BrushCommands {
 
         Vector size = clipboard.getSize();
 
-        if (size.getBlockX() > config.maxBrushRadius
-                || size.getBlockY() > config.maxBrushRadius
-                || size.getBlockZ() > config.maxBrushRadius) {
-            player.printError("Максимально допустимый радиус кисти: "
-                    + config.maxBrushRadius);
-            return;
-        }
+        we.checkMaxBrushRadius(size.getBlockX());
+        we.checkMaxBrushRadius(size.getBlockY());
+        we.checkMaxBrushRadius(size.getBlockZ());
 
         BrushTool tool = session.getBrushTool(player.getItemInHand());
         tool.setBrush(new ClipboardBrush(clipboard, args.hasFlag('a')), "worldedit.brush.clipboard");
@@ -198,15 +176,9 @@ public class BrushCommands {
     @CommandPermissions("worldedit.brush.smooth")
     public void smoothBrush(CommandContext args, LocalSession session,
             LocalPlayer player, EditSession editSession) throws WorldEditException {
-        
-        LocalConfiguration config = we.getConfiguration();
 
         double radius = args.argsLength() > 0 ? args.getDouble(0) : 2;
-        if (radius > config.maxBrushRadius) {
-            player.printError("Максимально допустимый радиус кисти: "
-                    + config.maxBrushRadius);
-            return;
-        }
+        we.checkMaxBrushRadius(radius);
 
         int iterations = args.argsLength() > 1 ? args.getInteger(1) : 4;
 
@@ -228,15 +200,9 @@ public class BrushCommands {
     @CommandPermissions("worldedit.brush.ex")
     public void extinguishBrush(CommandContext args, LocalSession session,
             LocalPlayer player, EditSession editSession) throws WorldEditException {
-        
-        LocalConfiguration config = we.getConfiguration();
 
         double radius = args.argsLength() > 1 ? args.getDouble(1) : 5;
-        if (radius > config.maxBrushRadius) {
-            player.printError("Максимально допустимый радиус кисти: "
-                    + config.maxBrushRadius);
-            return;
-        }
+        we.checkMaxBrushRadius(radius);
 
         BrushTool tool = session.getBrushTool(player.getItemInHand());
         Pattern fill = new SingleBlockPattern(new BaseBlock(0));
@@ -264,14 +230,8 @@ public class BrushCommands {
     public void gravityBrush(CommandContext args, LocalSession session,
                                 LocalPlayer player, EditSession editSession) throws WorldEditException {
 
-        LocalConfiguration config = we.getConfiguration();
-
         double radius = args.argsLength() > 0 ? args.getDouble(0) : 5;
-        if (radius > config.maxBrushRadius) {
-            player.printError("Максимально допустимый радиус кисти: "
-                    + config.maxBrushRadius);
-            return;
-        }
+        we.checkMaxBrushRadius(radius);
 
         BrushTool tool = session.getBrushTool(player.getItemInHand());
         tool.setSize(radius);
@@ -302,7 +262,7 @@ public class BrushCommands {
         // hmmmm not horribly worried about this because -1 is still rather efficient,
         // the problem arises when butcherMaxRadius is some really high number but not infinite
         // - original idea taken from https://github.com/sk89q/worldedit/pull/198#issuecomment-6463108
-        if (player.hasPermission("worldedit. butcher")) {
+        if (player.hasPermission("worldedit.butcher")) {
             maxRadius = Math.max(config.maxBrushRadius, config.butcherMaxRadius);
         }
         if (radius > maxRadius) {

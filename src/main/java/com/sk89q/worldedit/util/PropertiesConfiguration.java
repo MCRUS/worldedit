@@ -83,6 +83,8 @@ public class PropertiesConfiguration extends LocalConfiguration {
         maxChangeLimit = getInt("max-changed-blocks", maxChangeLimit);
         defaultMaxPolygonalPoints = getInt("default-max-polygon-points", defaultMaxPolygonalPoints);
         maxPolygonalPoints = getInt("max-polygon-points", maxPolygonalPoints);
+        defaultMaxPolyhedronPoints = getInt("default-max-polyhedron-points", defaultMaxPolyhedronPoints);
+        maxPolyhedronPoints = getInt("max-polyhedron-points", maxPolyhedronPoints);
         shellSaveType = getString("shell-save-type", shellSaveType);
         maxRadius = getInt("max-radius", maxRadius);
         maxSuperPickaxeSize = getInt("max-super-pickaxe-size", maxSuperPickaxeSize);
@@ -104,7 +106,6 @@ public class PropertiesConfiguration extends LocalConfiguration {
         scriptsDir = getString("craftscript-dir", scriptsDir);
         butcherDefaultRadius = getInt("butcher-default-radius", butcherDefaultRadius);
         butcherMaxRadius = getInt("butcher-max-radius", butcherMaxRadius);
-        allowExtraDataValues = getBool("allow-extra-data-values", allowExtraDataValues);
         allowSymlinks = getBool("allow-symbolic-links", allowSymlinks);
 
         LocalSession.MAX_HISTORY_SIZE = Math.max(15, getInt("history-size", 15));

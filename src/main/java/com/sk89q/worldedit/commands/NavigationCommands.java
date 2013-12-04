@@ -116,11 +116,12 @@ public class NavigationCommands {
     }
 
     @Command(
-            aliases = {"ceil"},
-            usage = "[clearance]",
-            desc = "Перейти на потолок",
-            min = 0,
-            max = 1
+        aliases = { "ceil" },
+        usage = "[clearance]",
+        desc = "Перейти на потолок",
+        flags = "g",
+        min = 0,
+        max = 1
     )
     @CommandPermissions("worldedit.navigation.ceiling")
     @Logging(POSITION)
@@ -130,7 +131,8 @@ public class NavigationCommands {
         int clearence = args.argsLength() > 0 ?
                 Math.max(0, args.getInteger(0)) : 0;
 
-        if (player.ascendToCeiling(clearence)) {
+        final boolean alwaysGlass = args.hasFlag('g');
+        if (player.ascendToCeiling(clearence, alwaysGlass)) {
             player.print("Уииии!");
         } else {
             player.printError("Нет свободного места, которое вы нашли.");
@@ -175,11 +177,12 @@ public class NavigationCommands {
     }
 
     @Command(
-            aliases = {"up"},
-            usage = "<block>",
-            desc = "Подняться вверх на некоторое расстояние",
-            min = 1,
-            max = 1
+        aliases = { "up" },
+        usage = "<block>",
+        desc = "Подняться вверх на некоторое расстояние",
+        flags = "g",
+        min = 1,
+        max = 1
     )
     @CommandPermissions("worldedit.navigation.up")
     @Logging(POSITION)
@@ -188,7 +191,8 @@ public class NavigationCommands {
 
         int distance = args.getInteger(0);
 
-        if (player.ascendUpwards(distance)) {
+        final boolean alwaysGlass = args.hasFlag('g');
+        if (player.ascendUpwards(distance, alwaysGlass)) {
             player.print("Уииии!");
         } else {
             player.printError("Вас ударило что-то выше Вас.");

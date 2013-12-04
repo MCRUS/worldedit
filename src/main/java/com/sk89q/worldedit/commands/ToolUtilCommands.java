@@ -148,15 +148,9 @@ public class ToolUtilCommands {
     @CommandPermissions("worldedit.brush.options.size")
     public void size(CommandContext args, LocalSession session, LocalPlayer player,
             EditSession editSession) throws WorldEditException {
-        
-        LocalConfiguration config = we.getConfiguration();
 
         int radius = args.getInteger(0);
-        if (radius > config.maxBrushRadius) {
-            player.printError("Максимальный размер кисти органичен: "
-                    + config.maxBrushRadius);
-            return;
-        }
+        we.checkMaxBrushRadius(radius);
 
         session.getBrushTool(player.getItemInHand()).setSize(radius);
         player.print("Размер кисти выставлен.");

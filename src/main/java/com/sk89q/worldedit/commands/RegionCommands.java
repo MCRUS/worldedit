@@ -23,6 +23,8 @@ import static com.sk89q.minecraft.util.commands.Logging.LogMode.ALL;
 import static com.sk89q.minecraft.util.commands.Logging.LogMode.ORIENTATION_REGION;
 import static com.sk89q.minecraft.util.commands.Logging.LogMode.REGION;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 
 import com.sk89q.minecraft.util.commands.Command;
@@ -44,6 +46,8 @@ import com.sk89q.worldedit.filtering.HeightMapFilter;
 import com.sk89q.worldedit.masks.Mask;
 import com.sk89q.worldedit.patterns.Pattern;
 import com.sk89q.worldedit.patterns.SingleBlockPattern;
+import com.sk89q.worldedit.regions.ConvexPolyhedralRegion;
+import com.sk89q.worldedit.regions.CuboidRegion;
 import com.sk89q.worldedit.regions.Region;
 import com.sk89q.worldedit.regions.RegionOperationException;
 import com.sk89q.worldedit.util.StringUtil;
@@ -86,12 +90,86 @@ public class RegionCommands {
     }
 
     @Command(
-            aliases = {"/replace", "/re", "/rep"},
-            usage = "[from-block] <to-block>",
-            desc = "Заменяет все блоки в выделенной территории на другие",
-            flags = "f",
+            aliases = { "/line" },
+            usage = "<block> [thickness]",
+            desc = "Рисует линию между углами кубоида",
+            help =
+                "Рисует линию между углами выделенного кубоида.\n" +
+                "Может быть применено только к кубоиду.\n" +
+                "Флаги:\n" +
+                "  -h генерирует только поверхность",
+            flags = "h",
             min = 1,
             max = 2
+    )
+    @CommandPermissions("worldedit.region.line")
+    @Logging(REGION)
+    public void line(CommandContext args, LocalSession session, LocalPlayer player,
+            EditSession editSession) throws WorldEditException {
+
+        Region region = session.getSelection(session.getSelectionWorld());
+        if (!(region instanceof CuboidRegion)) {
+            player.printError("Неверный тип региона");
+            return;
+        }
+        if (args.argsLength() < 2 ? false : args.getDouble(1) < 0) {
+            player.printError("Неверная толщина. Не может быть отрицательная.");
+            return;
+        }
+
+        Pattern pattern = we.getBlockPattern(player, args.getString(0));
+        CuboidRegion cuboidregion = (CuboidRegion) region;
+        Vector pos1 = cuboidregion.getPos1();
+        Vector pos2 = cuboidregion.getPos2();
+        int blocksChanged = editSession.drawLine(pattern, pos1, pos2, args.argsLength() < 2 ? 0 : args.getDouble(1), !args.hasFlag('h'));
+
+        player.print(blocksChanged + " " + StringUtil.plural(blocksChanged, "блок был изменен", "блока было изменено", "блоков было изменено")+".");
+    }
+
+    @Command(
+            aliases = { "/curve" },
+            usage = "<block> [thickness]",
+            desc = "Рисует кривую через выделенные точки.",
+            help =
+                "Рисует кривую через выделенные точки.\n" +
+                "Может быть примерено только к полигональному веделению.\n" +
+                "Флаги:\n" +
+                "  -h генерирует только оболочку",
+            flags = "h",
+            min = 1,
+            max = 2
+    )
+    @CommandPermissions("worldedit.region.curve")
+    @Logging(REGION)
+    public void curve(CommandContext args, LocalSession session, LocalPlayer player,
+            EditSession editSession) throws WorldEditException {
+
+        Region region = session.getSelection(session.getSelectionWorld());
+        if (!(region instanceof ConvexPolyhedralRegion)) {
+            player.printError("Неверный тип региона");
+            return;
+        }
+        if (args.argsLength() < 2 ? false : args.getDouble(1) < 0) {
+            player.printError("Неверная толщина. Не может быть отрицательная.");
+            return;
+        }
+
+        Pattern pattern = we.getBlockPattern(player, args.getString(0));
+        ConvexPolyhedralRegion cpregion = (ConvexPolyhedralRegion) region;
+        List<Vector> vectors = new ArrayList<Vector>(cpregion.getVertices());
+
+        int blocksChanged = editSession.drawSpline(pattern, vectors, 0, 0, 0, 10, args.argsLength() < 2 ? 0 : args.getDouble(1), !args.hasFlag('h'));
+
+        player.print(blocksChanged + " " + StringUtil.plural(blocksChanged, "блок был изменен", "блока было изменено", "блоков было изменено")+".");
+    }
+
+    @Command(
+        aliases = { "/replace", "/re", "/rep" },
+        usage = "[from-block] <to-block>",
+        desc = "Заменяет все блоки в выделенной территории на другие",
+        flags = "f",
+        min = 1,
+        max = 2
     )
     @CommandPermissions("worldedit.region.replace")
     @Logging(REGION)
@@ -108,7 +186,7 @@ public class RegionCommands {
             to = we.getBlockPattern(player, args.getString(1));
         }
 
-        int affected = 0;
+        final int affected;
         if (to instanceof SingleBlockPattern) {
             affected = editSession.replaceBlocks(session.getSelection(player.getWorld()), from,
                     ((SingleBlockPattern) to).getBlock());
@@ -190,12 +268,15 @@ public class RegionCommands {
     public void walls(CommandContext args, LocalSession session, LocalPlayer player,
                       EditSession editSession) throws WorldEditException {
 
-        Pattern pattern = we.getBlockPattern(player, args.getString(0));
-        int affected;
-        if (pattern instanceof SingleBlockPattern) {
-            affected = editSession.makeCuboidWalls(session.getSelection(player.getWorld()), ((SingleBlockPattern) pattern).getBlock());
+        final Pattern pattern = we.getBlockPattern(player, args.getString(0));
+        final int affected;
+        final Region region = session.getSelection(player.getWorld());
+        if (!(region instanceof CuboidRegion)) {
+            affected = editSession.makeWalls(region, pattern);
+        } else if (pattern instanceof SingleBlockPattern) {
+            affected = editSession.makeCuboidWalls(region, ((SingleBlockPattern) pattern).getBlock());
         } else {
-            affected = editSession.makeCuboidWalls(session.getSelection(player.getWorld()), pattern);
+            affected = editSession.makeCuboidWalls(region, pattern);
         }
 
         player.print(affected + " " + StringUtil.plural(affected, "блок изменен", "блока изменено", "блоков изменено") + ".");
@@ -213,12 +294,15 @@ public class RegionCommands {
     public void faces(CommandContext args, LocalSession session, LocalPlayer player,
                       EditSession editSession) throws WorldEditException {
 
-        Pattern pattern = we.getBlockPattern(player, args.getString(0));
-        int affected;
-        if (pattern instanceof SingleBlockPattern) {
-            affected = editSession.makeCuboidFaces(session.getSelection(player.getWorld()), ((SingleBlockPattern) pattern).getBlock());
+        final Pattern pattern = we.getBlockPattern(player, args.getString(0));
+        final int affected;
+        final Region region = session.getSelection(player.getWorld());
+        if (!(region instanceof CuboidRegion)) {
+            affected = editSession.makeFaces(region, pattern);
+        } else if (pattern instanceof SingleBlockPattern) {
+            affected = editSession.makeCuboidFaces(region, ((SingleBlockPattern) pattern).getBlock());
         } else {
-            affected = editSession.makeCuboidFaces(session.getSelection(player.getWorld()), pattern);
+            affected = editSession.makeCuboidFaces(region, pattern);
         }
 
         player.print(affected + " " + StringUtil.plural(affected, "блок изменен", "блока изменено", "блоков изменено") + ".");
@@ -281,7 +365,7 @@ public class RegionCommands {
             replace = new BaseBlock(BlockID.AIR);
         }
 
-        int affected = editSession.moveCuboidRegion(session.getSelection(player.getWorld()),
+        int affected = editSession.moveRegion(session.getSelection(player.getWorld()),
                 dir, count, true, replace);
 
         if (args.hasFlag('s')) {
@@ -392,11 +476,11 @@ public class RegionCommands {
         Vector unit;
 
         if (args.hasFlag('r')) {
-            zero = new Vector(0, 0, 0);
-            unit = new Vector(1, 1, 1);
+            zero = Vector.ZERO;
+            unit = Vector.ONE;
         } else if (args.hasFlag('o')) {
             zero = session.getPlacementPosition(player);
-            unit = new Vector(1, 1, 1);
+            unit = Vector.ONE;
         } else {
             final Vector min = region.getMinimumPoint();
             final Vector max = region.getMaximumPoint();

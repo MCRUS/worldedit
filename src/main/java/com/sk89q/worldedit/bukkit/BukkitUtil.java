@@ -21,6 +21,14 @@ package com.sk89q.worldedit.bukkit;
 
 import java.util.List;
 
+import com.sk89q.worldedit.NotABlockException;
+import com.sk89q.worldedit.WorldEditException;
+import com.sk89q.worldedit.blocks.BaseBlock;
+import com.sk89q.worldedit.blocks.BlockID;
+import com.sk89q.worldedit.blocks.BlockType;
+import com.sk89q.worldedit.blocks.ItemID;
+import com.sk89q.worldedit.blocks.SkullBlock;
+import org.bukkit.DyeColor;
 import org.bukkit.Server;
 import org.bukkit.World;
 import org.bukkit.block.Block;
@@ -41,6 +49,8 @@ import com.sk89q.worldedit.bukkit.entity.BukkitEntity;
 import com.sk89q.worldedit.bukkit.entity.BukkitExpOrb;
 import com.sk89q.worldedit.bukkit.entity.BukkitItem;
 import com.sk89q.worldedit.bukkit.entity.BukkitPainting;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.material.Dye;
 
 public class BukkitUtil {
     private BukkitUtil() {
@@ -117,6 +127,7 @@ public class BukkitUtil {
      * Bukkit's Location class has serious problems with floating point
      * precision.
      */
+    @SuppressWarnings("RedundantIfStatement")
     public static boolean equals(org.bukkit.Location a, org.bukkit.Location b) {
         if (Math.abs(a.getX() - b.getX()) > EQUALS_PRECISION) return false;
         if (Math.abs(a.getY() - b.getY()) > EQUALS_PRECISION) return false;
@@ -151,5 +162,34 @@ public class BukkitUtil {
             default:
                 return new BukkitEntity(toLocation(e.getLocation()), e.getType(), e.getUniqueId());
         }
+    }
+
+    public static BaseBlock toBlock(LocalWorld world, ItemStack itemStack) throws WorldEditException {
+        final int typeId = itemStack.getTypeId();
+
+        switch (typeId) {
+            case ItemID.INK_SACK:
+                final Dye materialData = (Dye) itemStack.getData();
+                if (materialData.getColor() == DyeColor.BROWN) {
+                    return new BaseBlock(BlockID.COCOA_PLANT, -1);
+                }
+                break;
+
+            case ItemID.HEAD:
+                return new SkullBlock(0, (byte) itemStack.getDurability());
+
+            default:
+                final BaseBlock baseBlock = BlockType.getBlockForItem(typeId, itemStack.getDurability());
+                if (baseBlock != null) {
+                    return baseBlock;
+                }
+                break;
+        }
+
+        if (world.isValidBlockType(typeId)) {
+            return new BaseBlock(typeId, -1);
+        }
+
+        throw new NotABlockException(typeId);
     }
 }

@@ -25,19 +25,19 @@ import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.LocalPlayer;
 import com.sk89q.worldedit.LocalSession;
 import com.sk89q.worldedit.Vector;
+import com.sk89q.worldedit.blocks.BaseBlock;
 
 /**
  *
  * @author 1337
  */
-public class UnderOverlayMask implements Mask {
-
-    private int yMod;
+public class UnderOverlayMask extends AbstractMask {
+    private final int yMod;
     private Mask mask;
 
     @Deprecated
     public UnderOverlayMask(Set<Integer> ids, boolean overlay) {
-        this(new BlockTypeMask(ids), overlay); 
+        this(new BlockTypeMask(ids), overlay);
     }
     
     public UnderOverlayMask(Mask mask, boolean overlay) {
@@ -47,22 +47,27 @@ public class UnderOverlayMask implements Mask {
 
     @Deprecated
     public void addAll(Set<Integer> ids) {
-        if (mask instanceof BlockTypeMask) {
-            BlockTypeMask blockTypeMask = (BlockTypeMask) mask;
+        if (mask instanceof BlockMask) {
+            final BlockMask blockTypeMask = (BlockMask) mask;
             for (Integer id : ids) {
-                blockTypeMask.add(id);
+                blockTypeMask.add(new BaseBlock(id));
             }
         } else if (mask instanceof ExistingBlockMask) {
-            mask = new BlockTypeMask(ids);
+            final BlockMask blockMask = new BlockMask();
+            for (int type : ids) {
+                blockMask.add(new BaseBlock(type));
+            }
+            mask = blockMask;
         }
     }
 
+    @Override
     public void prepare(LocalSession session, LocalPlayer player, Vector target) {
         mask.prepare(session, player, target);
     }
 
+    @Override
     public boolean matches(EditSession editSession, Vector pos) {
-        return mask.matches(editSession, pos.add(0, yMod, 0));
+        return !mask.matches(editSession, pos) && mask.matches(editSession, pos.add(0, yMod, 0));
     }
-
 }

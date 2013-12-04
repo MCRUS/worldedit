@@ -6,3 +6,5 @@
 /dependency-reduced-pom.xml
 /*.iml
 /.idea
+/forge-download
+*-private.sh

@@ -84,6 +84,7 @@ import com.sk89q.worldedit.masks.InvertedMask;
 import com.sk89q.worldedit.masks.Mask;
 import com.sk89q.worldedit.masks.RandomMask;
 import com.sk89q.worldedit.masks.RegionMask;
+import com.sk89q.worldedit.masks.SolidBlockMask;
 import com.sk89q.worldedit.masks.UnderOverlayMask;
 import com.sk89q.worldedit.patterns.BlockChance;
 import com.sk89q.worldedit.patterns.ClipboardPattern;
@@ -344,10 +345,9 @@ public class WorldEdit {
             // Have the session use inventory if it's enabled and the player
             // doesn't have an override
             session.setUseInventory(config.useInventory
-                    && !((config.useInventoryOverride ||
-                    (config.useInventoryCreativeOverride && player.hasCreativeMode()))
-                    && player.hasPermission("worldedit.inventory.unrestricted")));
-
+                    && !(config.useInventoryOverride
+                            && (player.hasPermission("worldedit.inventory.unrestricted")
+                                || (config.useInventoryCreativeOverride && player.hasCreativeMode()))));
         }
 
         return session;
@@ -367,7 +367,7 @@ public class WorldEdit {
     }
 
     public BaseBlock getBlock(LocalPlayer player, String arg, boolean allAllowed)
-            throws UnknownItemException, DisallowedItemException {
+            throws WorldEditException {
         return getBlock(player, arg, allAllowed, false);
     }
 
@@ -377,219 +377,260 @@ public class WorldEdit {
      * @param player
      * @param arg
      * @param allAllowed true to ignore blacklists
+     * @param allowNoData return -1 for data if no data was given.
      * @return
      * @throws UnknownItemException
      * @throws DisallowedItemException
      */
     public BaseBlock getBlock(LocalPlayer player, String arg,
                               boolean allAllowed, boolean allowNoData)
-            throws UnknownItemException, DisallowedItemException {
+            throws WorldEditException {
         BlockType blockType;
         arg = arg.replace("_", " ");
         arg = arg.replace(";", "|");
         String[] blockAndExtraData = arg.split("\\|");
         String[] typeAndData = blockAndExtraData[0].split(":", 2);
         String testID = typeAndData[0];
+
         int blockId = -1;
 
         int data = -1;
 
-        // Attempt to parse the item ID or otherwise resolve an item/block
-        // name to its numeric ID
-        try {
-            blockId = Integer.parseInt(testID);
+        boolean parseDataValue = true;
+        if ("hand".equalsIgnoreCase(testID)) {
+            // Get the block type from the item in the user's hand.
+            final BaseBlock blockInHand = player.getBlockInHand();
+            if (blockInHand.getClass() != BaseBlock.class) {
+                return blockInHand;
+            }
+
+            blockId = blockInHand.getId();
             blockType = BlockType.fromID(blockId);
-        } catch (NumberFormatException e) {
-            blockType = BlockType.lookup(testID);
-            if (blockType == null) {
-                int t = server.resolveItem(testID);
-                if (t > 0) {
-                    blockType = BlockType.fromID(t); // Could be null
-                    blockId = t;
+            data = blockInHand.getData();
+        } else if ("pos1".equalsIgnoreCase(testID)) {
+            // Get the block type from the "primary position"
+            final LocalWorld world = player.getWorld();
+            final BlockVector primaryPosition = getSession(player).getRegionSelector(world).getPrimaryPosition();
+            final BaseBlock blockInHand = world.getBlock(primaryPosition);
+            if (blockInHand.getClass() != BaseBlock.class) {
+                return blockInHand;
+            }
+
+            blockId = blockInHand.getId();
+            blockType = BlockType.fromID(blockId);
+            data = blockInHand.getData();
+        } else {
+            // Attempt to parse the item ID or otherwise resolve an item/block
+            // name to its numeric ID
+            try {
+                blockId = Integer.parseInt(testID);
+                blockType = BlockType.fromID(blockId);
+            } catch (NumberFormatException e) {
+                blockType = BlockType.lookup(testID);
+                if (blockType == null) {
+                    int t = server.resolveItem(testID);
+                    if (t > 0) {
+                        blockType = BlockType.fromID(t); // Could be null
+                        blockId = t;
+                    }
                 }
             }
-        }
 
-        if (blockId == -1 && blockType == null) {
-            // Maybe it's a cloth
-            ClothColor col = ClothColor.lookup(testID);
+            if (blockId == -1 && blockType == null) {
+                // Maybe it's a cloth
+                ClothColor col = ClothColor.lookup(testID);
+                if (col == null) {
+                    throw new UnknownItemException(arg);
+                }
 
-            if (col != null) {
                 blockType = BlockType.CLOTH;
                 data = col.getID();
-            } else {
+
+                // Prevent overriding the data value
+                parseDataValue = false;
+            }
+
+            // Read block ID
+            if (blockId == -1) {
+                blockId = blockType.getID();
+            }
+
+            if (!player.getWorld().isValidBlockType(blockId)) {
                 throw new UnknownItemException(arg);
             }
         }
 
-        // Read block ID
-        if (blockId == -1) {
-            blockId = blockType.getID();
+        if (!allowNoData && data == -1) {
+            // No wildcards allowed => eliminate them.
+            data = 0;
         }
 
-        if (!player.getWorld().isValidBlockType(blockId)) {
-            throw new UnknownItemException(arg);
-        }
-
-        if (data == -1) { // Block data not yet detected
+        if (parseDataValue) { // Block data not yet detected
             // Parse the block data (optional)
             try {
-                data = (typeAndData.length > 1 && typeAndData[1].length() > 0) ? Integer.parseInt(typeAndData[1]) : (allowNoData ? -1 : 0);
-                if ((data > 15 && !config.allowExtraDataValues) || (data < 0 && !(allAllowed && data == -1))) {
+                if (typeAndData.length > 1 && typeAndData[1].length() > 0) {
+                    data = Integer.parseInt(typeAndData[1]);
+                }
+
+                if (data > 15) {
+                    throw new InvalidItemException(arg, "Неверное значение '" + typeAndData[1] + "'");
+                }
+
+                if (data < 0 && !(allAllowed && data == -1)) {
                     data = 0;
                 }
             } catch (NumberFormatException e) {
-                if (blockType != null) {
-                    switch (blockType) {
-                        case CLOTH:
-                            ClothColor col = ClothColor.lookup(typeAndData[1]);
+                if (blockType == null) {
+                    throw new InvalidItemException(arg, "Неверное значение '" + typeAndData[1] + "'");
+                }
 
-                            if (col != null) {
-                                data = col.getID();
-                            } else {
-                                throw new InvalidItemException(arg, "Неизвесный цвет одежды '" + typeAndData[1] + "'");
-                            }
-                            break;
+                switch (blockType) {
+                    case CLOTH:
+                    case STAINED_CLAY:
+                    case CARPET:
+                        ClothColor col = ClothColor.lookup(typeAndData[1]);
+                        if (col == null) {
+                            throw new InvalidItemException(arg, "Неизвестный цвет одежды '" + typeAndData[1] + "'");
+                        }
 
-                        case STEP:
-                        case DOUBLE_STEP:
-                            BlockType dataType = BlockType.lookup(typeAndData[1]);
+                        data = col.getID();
+                        break;
 
-                            if (dataType != null) {
-                                switch (dataType) {
-                                    case STONE:
-                                        data = 0;
-                                        break;
-                                    case SANDSTONE:
-                                        data = 1;
-                                        break;
-                                    case WOOD:
-                                        data = 2;
-                                        break;
-                                    case COBBLESTONE:
-                                        data = 3;
-                                        break;
-                                    case BRICK:
-                                        data = 4;
-                                        break;
-                                    case STONE_BRICK:
-                                        data = 5;
-                                        break;
-                                    case NETHER_BRICK:
-                                        data = 6;
-                                        break;
-                                    case QUARTZ_BLOCK:
-                                        data = 7;
-                                        break;
+                    case STEP:
+                    case DOUBLE_STEP:
+                        BlockType dataType = BlockType.lookup(typeAndData[1]);
 
-                                    default:
-                                        throw new InvalidItemException(arg, "Неверный тип ступеньки '" + typeAndData[1] + "'");
-                                }
-                            } else {
-                                throw new InvalidItemException(arg, "Неизвеный тип ступеньки '" + typeAndData[1] + "'");
-                            }
-                            break;
+                        if (dataType == null) {
+                            throw new InvalidItemException(arg, "Неизвестный тип ступеньки '" + typeAndData[1] + "'");
+                        }
 
-                        default:
-                            throw new InvalidItemException(arg, "Неизвеный тип ступеньки '" + typeAndData[1] + "'");
-                    }
-                } else {
-                    throw new InvalidItemException(arg, "Неизвеный тип ступеньки '" + typeAndData[1] + "'");
+                        switch (dataType) {
+                            case STONE:
+                                data = 0;
+                                break;
+                            case SANDSTONE:
+                                data = 1;
+                                break;
+                            case WOOD:
+                                data = 2;
+                                break;
+                            case COBBLESTONE:
+                                data = 3;
+                                break;
+                            case BRICK:
+                                data = 4;
+                                break;
+                            case STONE_BRICK:
+                                data = 5;
+                                break;
+                            case NETHER_BRICK:
+                                data = 6;
+                                break;
+                            case QUARTZ_BLOCK:
+                                data = 7;
+                                break;
+
+                            default:
+                                throw new InvalidItemException(arg, "Неизвестный тип ступеньки  '" + typeAndData[1] + "'");
+                        }
+                        break;
+
+                    default:
+                        throw new InvalidItemException(arg, "Неверное значение '" + typeAndData[1] + "'");
                 }
             }
         }
 
         // Check if the item is allowed
-        if (allAllowed || player.hasPermission("worldedit.anyblock") || !config.disallowedBlocks.contains(blockId)) {
-            if (blockType != null) {
-                switch (blockType) {
-                    case SIGN_POST:
-                    case WALL_SIGN:
-                        // Allow special sign text syntax
-                        String[] text = new String[4];
-                        text[0] = blockAndExtraData.length > 1 ? blockAndExtraData[1] : "";
-                        text[1] = blockAndExtraData.length > 2 ? blockAndExtraData[2] : "";
-                        text[2] = blockAndExtraData.length > 3 ? blockAndExtraData[3] : "";
-                        text[3] = blockAndExtraData.length > 4 ? blockAndExtraData[4] : "";
-                        return new SignBlock(blockType.getID(), data, text);
-
-                    case MOB_SPAWNER:
-                        // Allow setting mob spawn type
-                        if (blockAndExtraData.length > 1) {
-                            String mobName = blockAndExtraData[1];
-                            for (MobType mobType : MobType.values()) {
-                                if (mobType.getName().toLowerCase().equals(mobName.toLowerCase())) {
-                                    mobName = mobType.getName();
-                                    break;
-                                }
-                            }
-                            if (!server.isValidMobType(mobName)) {
-                                throw new InvalidItemException(arg, "Неверный тип моба '" + mobName + "'");
-                            }
-                            return new MobSpawnerBlock(data, mobName);
-                        } else {
-                            return new MobSpawnerBlock(data, MobType.PIG.getName());
-                        }
-
-                    case NOTE_BLOCK:
-                        // Allow setting note
-                        if (blockAndExtraData.length > 1) {
-                            byte note = Byte.parseByte(blockAndExtraData[1]);
-                            if (note < 0 || note > 24) {
-                                throw new InvalidItemException(arg, "Номер ноты указан не верно (слишком большой или маленький): '" + blockAndExtraData[1] + "'");
-                            } else {
-                                return new NoteBlock(data, note);
-                            }
-                        } else {
-                            return new NoteBlock(data, (byte) 0);
-                        }
-
-                    case HEAD:
-                        // allow setting type/player/rotation
-                        if (blockAndExtraData.length > 1) {
-                            // and thus, the format shall be "|type|rotation" or "|type" or "|rotation"
-                            byte rot = 0;
-                            String type = "";
-                            try {
-                                rot = Byte.parseByte(blockAndExtraData[1]);
-                            } catch (NumberFormatException e) {
-                                type = blockAndExtraData[1];
-                                if (blockAndExtraData.length > 2) {
-                                    try {
-                                        rot = Byte.parseByte(blockAndExtraData[2]);
-                                    } catch (NumberFormatException e2) {
-                                        throw new InvalidItemException(arg, "Второй частью мета названия головы должен быть номер.");
-                                    }
-                                }
-                            }
-                            byte skullType = 0;
-                            // type is either the mob type or the player name
-                            // sorry for the four minecraft accounts named "skeleton", "wither", "zombie", or "creeper"
-                            if (!type.isEmpty()) {
-                                if (type.equalsIgnoreCase("skeleton")) skullType = 0;
-                                else if (type.equalsIgnoreCase("wither")) skullType = 1;
-                                else if (type.equalsIgnoreCase("zombie")) skullType = 2;
-                                else if (type.equalsIgnoreCase("creeper")) skullType = 4;
-                                else skullType = 3;
-                            }
-                            if (skullType == 3) {
-                                return new SkullBlock(data, rot, type.replace(" ", "_")); // valid MC usernames
-                            } else {
-                                return new SkullBlock(data, skullType, rot);
-                            }
-                        } else {
-                            return new SkullBlock(data);
-                        }
-
-                    default:
-                        return new BaseBlock(blockId, data);
-                }
-            } else {
-                return new BaseBlock(blockId, data);
-            }
+        if (!allAllowed && !player.hasPermission("worldedit.anyblock") && config.disallowedBlocks.contains(blockId)) {
+            throw new DisallowedItemException(arg);
         }
 
-        throw new DisallowedItemException(arg);
+        if (blockType == null) {
+            return new BaseBlock(blockId, data);
+        }
+
+        switch (blockType) {
+            case SIGN_POST:
+            case WALL_SIGN:
+                // Allow special sign text syntax
+                String[] text = new String[4];
+                text[0] = blockAndExtraData.length > 1 ? blockAndExtraData[1] : "";
+                text[1] = blockAndExtraData.length > 2 ? blockAndExtraData[2] : "";
+                text[2] = blockAndExtraData.length > 3 ? blockAndExtraData[3] : "";
+                text[3] = blockAndExtraData.length > 4 ? blockAndExtraData[4] : "";
+                return new SignBlock(blockType.getID(), data, text);
+
+            case MOB_SPAWNER:
+                // Allow setting mob spawn type
+                if (blockAndExtraData.length > 1) {
+                    String mobName = blockAndExtraData[1];
+                    for (MobType mobType : MobType.values()) {
+                        if (mobType.getName().toLowerCase().equals(mobName.toLowerCase())) {
+                            mobName = mobType.getName();
+                            break;
+                        }
+                    }
+                    if (!server.isValidMobType(mobName)) {
+                        throw new InvalidItemException(arg, "Неизвестный тим моба '" + mobName + "'");
+                    }
+                    return new MobSpawnerBlock(data, mobName);
+                } else {
+                    return new MobSpawnerBlock(data, MobType.PIG.getName());
+                }
+
+            case NOTE_BLOCK:
+                // Allow setting note
+                if (blockAndExtraData.length <= 1) {
+                    return new NoteBlock(data, (byte) 0);
+                }
+
+                byte note = Byte.parseByte(blockAndExtraData[1]);
+                if (note < 0 || note > 24) {
+                    throw new InvalidItemException(arg, "Значение ноты выходит за пределы доступного: '" + blockAndExtraData[1] + "'");
+                }
+
+                return new NoteBlock(data, note);
+
+            case HEAD:
+                // allow setting type/player/rotation
+                if (blockAndExtraData.length <= 1) {
+                    return new SkullBlock(data);
+                }
+
+                byte rot = 0;
+                String type = "";
+                try {
+                    rot = Byte.parseByte(blockAndExtraData[1]);
+                } catch (NumberFormatException e) {
+                    type = blockAndExtraData[1];
+                    if (blockAndExtraData.length > 2) {
+                        try {
+                            rot = Byte.parseByte(blockAndExtraData[2]);
+                        } catch (NumberFormatException e2) {
+                            throw new InvalidItemException(arg, "Второе значение головы должно быть числовым.");
+                        }
+                    }
+                }
+                byte skullType = 0;
+                // type is either the mob type or the player name
+                // sorry for the four minecraft accounts named "skeleton", "wither", "zombie", or "creeper"
+                if (!type.isEmpty()) {
+                    if (type.equalsIgnoreCase("skeleton")) skullType = 0;
+                    else if (type.equalsIgnoreCase("wither")) skullType = 1;
+                    else if (type.equalsIgnoreCase("zombie")) skullType = 2;
+                    else if (type.equalsIgnoreCase("creeper")) skullType = 4;
+                    else skullType = 3;
+                }
+                if (skullType == 3) {
+                    return new SkullBlock(data, rot, type.replace(" ", "_")); // valid MC usernames
+                } else {
+                    return new SkullBlock(data, skullType, rot);
+                }
+
+            default:
+                return new BaseBlock(blockId, data);
+        }
     }
 
     /**
@@ -602,12 +643,12 @@ public class WorldEdit {
      * @throws DisallowedItemException
      */
     public BaseBlock getBlock(LocalPlayer player, String id)
-            throws UnknownItemException, DisallowedItemException {
+            throws WorldEditException {
         return getBlock(player, id, false);
     }
 
     public Set<BaseBlock> getBlocks(LocalPlayer player, String list, boolean allAllowed, boolean allowNoData)
-            throws DisallowedItemException, UnknownItemException {
+            throws WorldEditException {
         String[] items = list.split(",");
         Set<BaseBlock> blocks = new HashSet<BaseBlock>();
         for (String id : items) {
@@ -617,12 +658,12 @@ public class WorldEdit {
     }
 
     public Set<BaseBlock> getBlocks(LocalPlayer player, String list, boolean allAllowed)
-            throws DisallowedItemException, UnknownItemException {
+            throws WorldEditException {
         return getBlocks(player, list, allAllowed, false);
     }
 
     public Set<BaseBlock> getBlocks(LocalPlayer player, String list)
-            throws DisallowedItemException, UnknownItemException {
+            throws WorldEditException {
         return getBlocks(player, list, false);
     }
 
@@ -637,26 +678,23 @@ public class WorldEdit {
      * @throws DisallowedItemException
      */
     public Pattern getBlockPattern(LocalPlayer player, String patternString)
-            throws UnknownItemException, DisallowedItemException {
+            throws WorldEditException {
 
         String[] items = patternString.split(",");
 
         // Handle special block pattern types
         if (patternString.charAt(0) == '#') {
-            if (patternString.equals("#clipboard") || patternString.equals("#copy")) {
-                LocalSession session = getSession(player);
-                CuboidClipboard clipboard;
-
-                try {
-                    clipboard = session.getClipboard();
-                } catch (EmptyClipboardException e) {
-                    player.printError("Сначала скопируй область с помощью //copy.");
-                    throw new UnknownItemException("#clipboard");
-                }
-
-                return new ClipboardPattern(clipboard);
-            } else {
+            if (!patternString.equals("#clipboard") && !patternString.equals("#copy")) {
                 throw new UnknownItemException(patternString);
+            }
+
+            LocalSession session = getSession(player);
+
+            try {
+                return new ClipboardPattern(session.getClipboard());
+            } catch (EmptyClipboardException e) {
+                player.printError("Сначала скопируй область с помощью //copy.");
+                throw new UnknownItemException("#clipboard");
             }
         }
 
@@ -727,20 +765,22 @@ public class WorldEdit {
     private Mask getBlockMaskComponent(LocalPlayer player, LocalSession session, List<Mask> masks, String component) throws WorldEditException {
         final char firstChar = component.charAt(0);
         switch (firstChar) {
-            case '#':
-                if (component.equalsIgnoreCase("#existing")) {
-                    return new ExistingBlockMask();
-                } else if (component.equalsIgnoreCase("#dregion")
-                        || component.equalsIgnoreCase("#dselection")
-                        || component.equalsIgnoreCase("#dsel")) {
-                    return new DynamicRegionMask();
-                } else if (component.equalsIgnoreCase("#selection")
-                        || component.equalsIgnoreCase("#region")
-                        || component.equalsIgnoreCase("#sel")) {
-                    return new RegionMask(session.getSelection(player.getWorld()));
-                } else {
-                    throw new UnknownItemException(component);
-                }
+        case '#':
+            if (component.equalsIgnoreCase("#existing")) {
+                return new ExistingBlockMask();
+            } else if (component.equalsIgnoreCase("#solid")) {
+                return new SolidBlockMask();
+            } else if (component.equalsIgnoreCase("#dregion")
+                    || component.equalsIgnoreCase("#dselection")
+                    || component.equalsIgnoreCase("#dsel")) {
+                return new DynamicRegionMask();
+            } else if (component.equalsIgnoreCase("#selection")
+                    || component.equalsIgnoreCase("#region")
+                    || component.equalsIgnoreCase("#sel")) {
+                return new RegionMask(session.getSelection(player.getWorld()));
+            } else {
+                throw new UnknownItemException(component);
+            }
 
             case '>':
             case '<':
@@ -786,8 +826,8 @@ public class WorldEdit {
      * @throws DisallowedItemException
      */
     public Set<Integer> getBlockIDs(LocalPlayer player,
-                                    String list, boolean allBlocksAllowed)
-            throws UnknownItemException, DisallowedItemException {
+            String list, boolean allBlocksAllowed)
+            throws WorldEditException {
 
         String[] items = list.split(",");
         Set<Integer> blocks = new HashSet<Integer>();
@@ -897,13 +937,25 @@ public class WorldEdit {
     public int getMaximumPolygonalPoints(LocalPlayer player) {
         if (player.hasPermission("worldedit.limit.unrestricted") || config.maxPolygonalPoints < 0) {
             return config.defaultMaxPolygonalPoints;
-        } else {
-            if (config.defaultMaxPolygonalPoints < 0) {
-                return config.maxPolygonalPoints;
-            }
-            return Math.min(config.defaultMaxPolygonalPoints,
-                    config.maxPolygonalPoints);
         }
+
+        if (config.defaultMaxPolygonalPoints < 0) {
+            return config.maxPolygonalPoints;
+        }
+
+        return Math.min(config.defaultMaxPolygonalPoints, config.maxPolygonalPoints);
+    }
+
+    public int getMaximumPolyhedronPoints(LocalPlayer player) {
+        if (player.hasPermission("worldedit.limit.unrestricted") || config.maxPolyhedronPoints < 0) {
+            return config.defaultMaxPolyhedronPoints;
+        }
+
+        if (config.defaultMaxPolyhedronPoints < 0) {
+            return config.maxPolyhedronPoints;
+        }
+
+        return Math.min(config.defaultMaxPolyhedronPoints, config.maxPolyhedronPoints);
     }
 
     /**
@@ -919,6 +971,18 @@ public class WorldEdit {
     }
 
     /**
+     * Checks to see if the specified brush radius is within bounds.
+     *
+     * @param radius
+     * @throws MaxBrushRadiusException
+     */
+    public void checkMaxBrushRadius(double radius) throws MaxBrushRadiusException {
+        if (config.maxBrushRadius > 0 && radius > config.maxBrushRadius) {
+            throw new MaxBrushRadiusException();
+        }
+    }
+
+    /**
      * Get a file relative to the defined working directory. If the specified
      * path is absolute, then the working directory is not used.
      *
@@ -929,9 +993,9 @@ public class WorldEdit {
         File f = new File(path);
         if (f.isAbsolute()) {
             return f;
-        } else {
-            return new File(config.getWorkingDirectory(), path);
         }
+
+        return new File(config.getWorkingDirectory(), path);
     }
 
     /**
@@ -1443,8 +1507,10 @@ public class WorldEdit {
         } catch (MaxChangedBlocksException e) {
             player.printError("Вы пытаетесь изменить слишком много блоков за одну операцию ("
                     + e.getBlockLimit() + ").");
+        } catch (MaxBrushRadiusException e) {
+            player.printError("Максимальный размер кисти: " + config.maxBrushRadius);
         } catch (MaxRadiusException e) {
-            player.printError("Максимальный радиус: " + config.maxRadius);
+            player.printError("Максимальный размер: " + config.maxRadius);
         } catch (UnknownDirectionException e) {
             player.printError("Неверное направление: " + e.getDirection());
         } catch (InsufficientArgumentsException e) {
@@ -1455,7 +1521,7 @@ public class WorldEdit {
             player.printError("Неверное имя файла '" + e.getFilename() + "': "
                     + e.getMessage());
         } catch (FilenameResolutionException e) {
-            player.printError("File '" + e.getFilename() + "' resolution error: "
+            player.printError("Ошибка резолюции файла '" + e.getFilename() + "': "
                     + e.getMessage());
         } catch (InvalidToolBindException e) {
             player.printError("Невозможно привязать действие к предмету "
@@ -1644,12 +1710,12 @@ public class WorldEdit {
         }
 
         if (p == null) {
-            version = "(неизместная)";
+            version = "(неизвестная)";
         } else {
             version = p.getImplementationVersion();
 
             if (version == null) {
-                version = "(неизместная)";
+                version = "(неизвестная)";
             }
         }
 

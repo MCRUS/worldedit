@@ -40,10 +40,18 @@ import com.sk89q.worldedit.blocks.BlockType;
 import com.sk89q.worldedit.expression.Expression;
 import com.sk89q.worldedit.expression.ExpressionException;
 import com.sk89q.worldedit.expression.runtime.RValue;
+import com.sk89q.worldedit.interpolation.Interpolation;
+import com.sk89q.worldedit.interpolation.KochanekBartelsInterpolation;
+import com.sk89q.worldedit.interpolation.Node;
 import com.sk89q.worldedit.masks.Mask;
 import com.sk89q.worldedit.patterns.Pattern;
 import com.sk89q.worldedit.regions.CuboidRegion;
 import com.sk89q.worldedit.regions.Region;
+import com.sk89q.worldedit.regions.RegionOperationException;
+import com.sk89q.worldedit.shape.ArbitraryBiomeShape;
+import com.sk89q.worldedit.shape.ArbitraryShape;
+import com.sk89q.worldedit.shape.RegionShape;
+import com.sk89q.worldedit.shape.WorldEditExpressionEnvironment;
 import com.sk89q.worldedit.util.TreeGenerator;
 
 /**
@@ -185,12 +193,6 @@ public class EditSession {
             return false;
         }
 
-        if (mask != null) {
-            if (!mask.matches(this, pt)) {
-                return false;
-            }
-        }
-
         final int existing = world.getBlockType(pt);
 
         // Clear the container block so that it doesn't drop items
@@ -254,6 +256,12 @@ public class EditSession {
             throws MaxChangedBlocksException {
         BlockVector blockPt = pt.toBlockVector();
 
+        if (mask != null) {
+            if (!mask.matches(this, blockPt)) {
+                return false;
+            }
+        }
+
         // if (!original.containsKey(blockPt)) {
         original.put(blockPt, getBlock(pt));
 
@@ -262,7 +270,7 @@ public class EditSession {
         }
         // }
 
-        current.put(pt.toBlockVector(), block);
+        current.put(blockPt, block);
 
         return smartSetBlock(pt, block);
     }
@@ -543,22 +551,6 @@ public class EditSession {
     public int countBlocks(Region region, Set<BaseBlock> searchBlocks) {
         int count = 0;
 
-        // allow -1 data in the searchBlocks to match any type
-        Set<BaseBlock> newSet = new HashSet<BaseBlock>() {
-            @Override
-            public boolean contains(Object o) {
-                for (BaseBlock b : this.toArray(new BaseBlock[this.size()])) {
-                    if (o instanceof BaseBlock) {
-                        if (b.equalsFuzzy((BaseBlock) o)) {
-                            return true;
-                        }
-                    }
-                }
-                return false;
-            }
-        };
-        newSet.addAll(searchBlocks);
-
         if (region instanceof CuboidRegion) {
             // Doing this for speed
             Vector min = region.getMinimumPoint();
@@ -577,7 +569,7 @@ public class EditSession {
                         Vector pt = new Vector(x, y, z);
 
                         BaseBlock compare = new BaseBlock(getBlockType(pt), getBlockData(pt));
-                        if (newSet.contains(compare)) {
+                        if (BaseBlock.containsFuzzy(searchBlocks, compare)) {
                             ++count;
                         }
                     }
@@ -586,7 +578,7 @@ public class EditSession {
         } else {
             for (Vector pt : region) {
                 BaseBlock compare = new BaseBlock(getBlockType(pt), getBlockData(pt));
-                if (newSet.contains(compare)) {
+                if (BaseBlock.containsFuzzy(searchBlocks, compare)) {
                     ++count;
                 }
             }
@@ -602,7 +594,6 @@ public class EditSession {
      * @param z
      * @param minY minimal height
      * @param maxY maximal height
-     * @param naturalOnly look at natural blocks or all blocks
      * @return height of highest block found or 'minY'
      */
     public int getHighestTerrainBlock(int x, int z, int minY, int maxY) {
@@ -623,7 +614,8 @@ public class EditSession {
         for (int y = maxY; y >= minY; --y) {
             Vector pt = new Vector(x, y, z);
             int id = getBlockType(pt);
-            if (naturalOnly ? BlockType.isNaturalTerrainBlock(id) : !BlockType.canPassThrough(id)) {
+            int data = getBlockData(pt);
+            if (naturalOnly ? BlockType.isNaturalTerrainBlock(id, data) : !BlockType.canPassThrough(id, data)) {
                 return y;
             }
         }
@@ -761,6 +753,20 @@ public class EditSession {
                                     walked.addFirst(upperBlock);
                                 }
                             }
+                        }
+                        break;
+
+                    case BlockID.MINECART_TRACKS:
+                    case BlockID.POWERED_RAIL:
+                    case BlockID.DETECTOR_RAIL:
+                    case BlockID.ACTIVATOR_RAIL:
+                        // Here, rails are hardcoded to be attached to the block below them.
+                        // They're also attached to the block they're ascending towards via BlockType.getAttachment.
+                        BlockVector lowerBlock = current.add(0, -1, 0).toBlockVector();
+                        if (blocks.contains(lowerBlock) && !walked.contains(lowerBlock)) {
+                            walked.addFirst(lowerBlock);
+                        }
+                        break;
                     }
 
                     final PlayerDirection attachment = BlockType.getAttachment(type, data);
@@ -1528,6 +1534,19 @@ public class EditSession {
     }
 
     /**
+     * Make faces of the region
+     *
+     * @param region
+     * @param pattern
+     * @return number of blocks affected
+     * @throws MaxChangedBlocksException
+     */
+    public int makeFaces(final Region region, Pattern pattern) throws MaxChangedBlocksException {
+        return new RegionShape(region).generate(this, pattern, true);
+    }
+
+
+    /**
      * Make walls of the region (as if it was a cuboid if it's not).
      *
      * @param region
@@ -1579,7 +1598,7 @@ public class EditSession {
      * Make walls of the region (as if it was a cuboid if it's not).
      *
      * @param region
-     * @param block
+     * @param pattern
      * @return number of blocks affected
      * @throws MaxChangedBlocksException
      */
@@ -1625,6 +1644,31 @@ public class EditSession {
         }
 
         return affected;
+    }
+
+    /**
+     * Make walls of the region
+     *
+     * @param region
+     * @param pattern
+     * @return number of blocks affected
+     * @throws MaxChangedBlocksException
+     */
+    public int makeWalls(final Region region, Pattern pattern) throws MaxChangedBlocksException {
+        final int minY = region.getMinimumPoint().getBlockY();
+        final int maxY = region.getMaximumPoint().getBlockY();
+        final ArbitraryShape shape = new RegionShape(region) {
+            @Override
+            protected BaseBlock getMaterial(int x, int y, int z, BaseBlock defaultMaterial) {
+                if (y > maxY || y < minY) {
+                    // Put holes into the floor and ceiling by telling ArbitraryShape that the shape goes on outside the region
+                    return defaultMaterial;
+                }
+
+                return super.getMaterial(x, y, z, defaultMaterial);
+            }
+        };
+        return shape.generate(this, pattern, true);
     }
 
     /**
@@ -1830,6 +1874,54 @@ public class EditSession {
                     }
                 }
             }
+        }
+
+        return affected;
+    }
+
+    /**
+     * Move a region.
+     *
+     * @param region
+     * @param dir
+     * @param distance
+     * @param copyAir
+     * @param replace
+     * @return number of blocks moved
+     * @throws MaxChangedBlocksException
+     * @throws RegionOperationException
+     */
+    public int moveRegion(Region region, Vector dir, int distance,
+            boolean copyAir, BaseBlock replace)
+            throws MaxChangedBlocksException, RegionOperationException {
+        int affected = 0;
+
+        final Vector shift = dir.multiply(distance);
+
+        final Region newRegion = region.clone();
+        newRegion.shift(shift);
+
+        final Map<Vector, BaseBlock> delayed = new LinkedHashMap<Vector, BaseBlock>();
+
+        for (Vector pos : region) {
+            final BaseBlock block = getBlock(pos);
+
+            if (!block.isAir() || copyAir) {
+                final Vector newPos = pos.add(shift);
+
+                delayed.put(newPos, getBlock(pos));
+
+                // Don't want to replace the old block if it's in
+                // the new area
+                if (!newRegion.contains(pos)) {
+                    setBlock(pos, replace);
+                }
+            }
+        }
+
+        for (Map.Entry<Vector, BaseBlock> entry : delayed.entrySet()) {
+            setBlock(entry.getKey(), entry.getValue());
+            ++affected;
         }
 
         return affected;
@@ -2435,6 +2527,7 @@ public class EditSession {
                 loop: for (int y = world.getMaxY(); y >= 1; --y) {
                     final Vector pt = new Vector(x, y, z);
                     final int id = getBlockType(pt);
+                    final int data = getBlockData(pt);
 
                     switch (id) {
                         case BlockID.DIRT:
@@ -2443,11 +2536,16 @@ public class EditSession {
                             }
                             break loop;
 
-                        case BlockID.WATER:
-                        case BlockID.STATIONARY_WATER:
-                        case BlockID.LAVA:
-                        case BlockID.STATIONARY_LAVA:
-                            // break on liquids...
+                    case BlockID.WATER:
+                    case BlockID.STATIONARY_WATER:
+                    case BlockID.LAVA:
+                    case BlockID.STATIONARY_LAVA:
+                        // break on liquids...
+                        break loop;
+
+                    default:
+                        // ...and all non-passable blocks
+                        if (!BlockType.canPassThrough(id, data)) {
                             break loop;
 
                         default:
@@ -2762,10 +2860,15 @@ public class EditSession {
         final RValue typeVariable = expression.getVariable("type", false);
         final RValue dataVariable = expression.getVariable("data", false);
 
+        final WorldEditExpressionEnvironment environment = new WorldEditExpressionEnvironment(this, unit, zero);
+        expression.setEnvironment(environment);
+
         final ArbitraryShape shape = new ArbitraryShape(region) {
             @Override
             protected BaseBlock getMaterial(int x, int y, int z, BaseBlock defaultMaterial) {
-                final Vector scaled = new Vector(x, y, z).subtract(zero).divide(unit);
+                final Vector current = new Vector(x, y, z);
+                environment.setCurrentBlock(current);
+                final Vector scaled = current.subtract(zero).divide(unit);
 
                 try {
                     if (expression.evaluate(scaled.getX(), scaled.getY(), scaled.getZ(), defaultMaterial.getType(), defaultMaterial.getData()) <= 0) {
@@ -2791,7 +2894,8 @@ public class EditSession {
         final RValue y = expression.getVariable("y", false);
         final RValue z = expression.getVariable("z", false);
 
-        Vector zero2 = zero.add(0.5, 0.5, 0.5);
+        final WorldEditExpressionEnvironment environment = new WorldEditExpressionEnvironment(this, unit, zero);
+        expression.setEnvironment(environment);
 
         final DoubleArrayList<BlockVector, BaseBlock> queue = new DoubleArrayList<BlockVector, BaseBlock>(false);
 
@@ -2802,13 +2906,11 @@ public class EditSession {
             // transform
             expression.evaluate(scaled.getX(), scaled.getY(), scaled.getZ());
 
-            final Vector sourceScaled = new Vector(x.getValue(), y.getValue(), z.getValue());
-
-            // unscale, unoffset, round-nearest
-            final BlockVector sourcePosition = sourceScaled.multiply(unit).add(zero2).toBlockPoint();
+            final BlockVector sourcePosition = environment.toWorld(x.getValue(), y.getValue(), z.getValue());
 
             // read block from world
-            BaseBlock material = new BaseBlock(world.getBlockType(sourcePosition), world.getBlockData(sourcePosition));
+            // TODO: use getBlock here once the reflection is out of the way
+            final BaseBlock material = new BaseBlock(world.getBlockType(sourcePosition), world.getBlockData(sourcePosition));
 
             // queue operation
             queue.put(position, material);
@@ -2828,13 +2930,13 @@ public class EditSession {
         return affected;
     }
 
-    Vector[] recurseDirections = {
-            PlayerDirection.NORTH.vector(),
-            PlayerDirection.EAST.vector(),
-            PlayerDirection.SOUTH.vector(),
-            PlayerDirection.WEST.vector(),
-            PlayerDirection.UP.vector(),
-            PlayerDirection.DOWN.vector(),
+    private static final Vector[] recurseDirections = {
+        PlayerDirection.NORTH.vector(),
+        PlayerDirection.EAST.vector(),
+        PlayerDirection.SOUTH.vector(),
+        PlayerDirection.WEST.vector(),
+        PlayerDirection.UP.vector(),
+        PlayerDirection.DOWN.vector(),
     };
 
     /**
@@ -2916,13 +3018,184 @@ public class EditSession {
         return affected;
     }
 
+    /**
+     * Draws a line (out of blocks) between two vectors.
+     *
+     * @param pattern The block pattern used to draw the line.
+     * @param pos1 One of the points that define the line.
+     * @param pos2 The other point that defines the line.
+     * @param radius The radius (thickness) of the line.
+     * @param filled If false, only a shell will be generated.
+     *
+     * @return number of blocks affected
+     * @throws MaxChangedBlocksException
+     */
+    public int drawLine(Pattern pattern, Vector pos1, Vector pos2, double radius, boolean filled)
+            throws MaxChangedBlocksException {
+
+        Set<Vector> vset = new HashSet<Vector>();
+        boolean notdrawn = true;
+
+        int x1 = pos1.getBlockX(), y1 = pos1.getBlockY(), z1 = pos1.getBlockZ();
+        int x2 = pos2.getBlockX(), y2 = pos2.getBlockY(), z2 = pos2.getBlockZ();
+        int tipx = x1, tipy = y1, tipz = z1;
+        int dx = Math.abs(x2 - x1), dy = Math.abs(y2 - y1), dz = Math.abs(z2 - z1);
+
+        if (dx + dy + dz == 0) {
+            vset.add(new Vector(tipx, tipy, tipz));
+            notdrawn = false;
+        }
+
+        if (Math.max(Math.max(dx, dy), dz) == dx && notdrawn) {
+            for (int domstep = 0; domstep <= dx; domstep++) {
+                tipx = x1 + domstep * (x2 - x1 > 0 ? 1 : -1);
+                tipy = (int) Math.round(y1 + domstep * ((double) dy) / ((double) dx) * (y2 - y1 > 0 ? 1 : -1));
+                tipz = (int) Math.round(z1 + domstep * ((double) dz) / ((double) dx) * (z2 - z1 > 0 ? 1 : -1));
+
+                vset.add(new Vector(tipx, tipy, tipz));
+            }
+            notdrawn = false;
+        }
+
+        if (Math.max(Math.max(dx, dy), dz) == dy && notdrawn) {
+            for (int domstep = 0; domstep <= dy; domstep++) {
+                tipy = y1 + domstep * (y2 - y1 > 0 ? 1 : -1);
+                tipx = (int) Math.round(x1 + domstep * ((double) dx) / ((double) dy) * (x2 - x1 > 0 ? 1 : -1));
+                tipz = (int) Math.round(z1 + domstep * ((double) dz) / ((double) dy) * (z2 - z1 > 0 ? 1 : -1));
+
+                vset.add(new Vector(tipx, tipy, tipz));
+            }
+            notdrawn = false;
+        }
+
+        if (Math.max(Math.max(dx, dy), dz) == dz && notdrawn) {
+            for (int domstep = 0; domstep <= dz; domstep++) {
+                tipz = z1 + domstep * (z2 - z1 > 0 ? 1 : -1);
+                tipy = (int) Math.round(y1 + domstep * ((double) dy) / ((double) dz) * (y2-y1>0 ? 1 : -1));
+                tipx = (int) Math.round(x1 + domstep * ((double) dx) / ((double) dz) * (x2-x1>0 ? 1 : -1));
+
+                vset.add(new Vector(tipx, tipy, tipz));
+            }
+            notdrawn = false;
+        }
+
+        vset = getBallooned(vset, radius);
+        if (!filled) {
+            vset = getHollowed(vset);
+        }
+        return setBlocks(vset, pattern);
+    }
+
+    /**
+     * Draws a spline (out of blocks) between specified vectors.
+     *
+     * @param pattern The block pattern used to draw the spline.
+     * @param nodevectors The list of vectors to draw through.
+     * @param tension The tension of every node.
+     * @param bias The bias of every node.
+     * @param continuity The continuity of every node.
+     * @param quality The quality of the spline. Must be greater than 0.
+     * @param radius The radius (thickness) of the spline.
+     * @param filled If false, only a shell will be generated.
+     *
+     * @return number of blocks affected
+     * @throws MaxChangedBlocksException
+     */
+    public int drawSpline(Pattern pattern, List<Vector> nodevectors, double tension, double bias, double continuity, double quality, double radius, boolean filled)
+            throws MaxChangedBlocksException {
+
+        Set<Vector> vset = new HashSet<Vector>();
+        List<Node> nodes = new ArrayList(nodevectors.size());
+
+        Interpolation interpol = new KochanekBartelsInterpolation();
+
+        for (int loop = 0; loop < nodevectors.size(); loop++) {
+            Node n = new Node(nodevectors.get(loop));
+            n.setTension(tension);
+            n.setBias(bias);
+            n.setContinuity(continuity);
+            nodes.add(n);
+        }
+
+        interpol.setNodes(nodes);
+        double splinelength = interpol.arcLength(0, 1);
+        for (double loop = 0; loop <= 1; loop += 1D / splinelength / quality) {
+            Vector tipv = interpol.getPosition(loop);
+            int tipx = (int) Math.round(tipv.getX());
+            int tipy = (int) Math.round(tipv.getY());
+            int tipz = (int) Math.round(tipv.getZ());
+
+            vset.add(new Vector(tipx, tipy, tipz));
+        }
+
+        vset = getBallooned(vset, radius);
+        if (!filled) {
+            vset = getHollowed(vset);
+        }
+        return setBlocks(vset, pattern);
+    }
+
+    private static double hypot(double... pars) {
+        double sum = 0;
+        for (double d : pars) {
+            sum += Math.pow(d, 2);
+        }
+        return Math.sqrt(sum);
+    }
+
+    private static Set<Vector> getBallooned(Set<Vector> vset, double radius) {
+        Set<Vector> returnset = new HashSet<Vector>();
+        int ceilrad = (int) Math.ceil(radius);
+
+        for (Vector v : vset) {
+            int tipx = v.getBlockX(), tipy = v.getBlockY(), tipz = v.getBlockZ();
+
+            for (int loopx = tipx - ceilrad; loopx <= tipx + ceilrad; loopx++) {
+                for (int loopy = tipy - ceilrad; loopy <= tipy + ceilrad; loopy++) {
+                    for (int loopz = tipz - ceilrad; loopz <= tipz + ceilrad; loopz++) {
+                        if (hypot(loopx - tipx, loopy - tipy, loopz - tipz) <= radius) {
+                            returnset.add(new Vector(loopx, loopy, loopz));
+                        }
+                    }
+                }
+            }
+        }
+        return returnset;
+    }
+
+    private static Set<Vector> getHollowed(Set<Vector> vset) {
+        Set<Vector> returnset = new HashSet<Vector>();
+        for (Vector v : vset) {
+            double x = v.getX(), y = v.getY(), z = v.getZ();
+            if (!(vset.contains(new Vector(x + 1, y, z)) &&
+            vset.contains(new Vector(x - 1, y, z)) &&
+            vset.contains(new Vector(x, y + 1, z)) &&
+            vset.contains(new Vector(x, y - 1, z)) &&
+            vset.contains(new Vector(x, y, z + 1)) &&
+            vset.contains(new Vector(x, y, z - 1)))) {
+                returnset.add(v);
+            }
+        }
+        return returnset;
+    }
+
+    private int setBlocks(Set<Vector> vset, Pattern pattern)
+        throws MaxChangedBlocksException {
+
+        int affected = 0;
+        for (Vector v : vset) {
+            affected += setBlock(v, pattern) ? 1 : 0;
+        }
+        return affected;
+    }
+
     private void recurseHollow(Region region, BlockVector origin, Set<BlockVector> outside) {
         final LinkedList<BlockVector> queue = new LinkedList<BlockVector>();
         queue.addLast(origin);
 
         while (!queue.isEmpty()) {
             final BlockVector current = queue.removeFirst();
-            if (!BlockType.canPassThrough(getBlockType(current))) {
+            if (!BlockType.canPassThrough(getBlockType(current), getBlockData(current))) {
                 continue;
             }
 
@@ -2940,4 +3213,38 @@ public class EditSession {
         } // while
     }
 
+    public int makeBiomeShape(final Region region, final Vector zero, final Vector unit, final BiomeType biomeType, final String expressionString, final boolean hollow) throws ExpressionException, MaxChangedBlocksException {
+        final Vector2D zero2D = zero.toVector2D();
+        final Vector2D unit2D = unit.toVector2D();
+
+        final Expression expression = Expression.compile(expressionString, "x", "z");
+        expression.optimize();
+
+        final EditSession editSession = this;
+        final WorldEditExpressionEnvironment environment = new WorldEditExpressionEnvironment(editSession, unit, zero);
+        expression.setEnvironment(environment);
+
+        final ArbitraryBiomeShape shape = new ArbitraryBiomeShape(region) {
+            @Override
+            protected BiomeType getBiome(int x, int z, BiomeType defaultBiomeType) {
+                final Vector2D current = new Vector2D(x, z);
+                environment.setCurrentBlock(current.toVector(0));
+                final Vector2D scaled = current.subtract(zero2D).divide(unit2D);
+
+                try {
+                    if (expression.evaluate(scaled.getX(), scaled.getZ()) <= 0) {
+                        return null;
+                    }
+
+                    // TODO: Allow biome setting via a script variable (needs BiomeType<->int mapping)
+                    return defaultBiomeType;
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    return null;
+                }
+            }
+        };
+
+        return shape.generate(this, biomeType, hollow);
+    }
 }
