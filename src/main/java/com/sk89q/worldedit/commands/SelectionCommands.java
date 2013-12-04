@@ -55,8 +55,6 @@ import com.sk89q.worldedit.regions.Region;
 import com.sk89q.worldedit.regions.RegionOperationException;
 import com.sk89q.worldedit.regions.RegionSelector;
 import com.sk89q.worldedit.regions.SphereRegionSelector;
-import com.sk89q.worldedit.blocks.*;
-import com.sk89q.worldedit.regions.CylinderRegionSelector;
 import com.sk89q.worldedit.util.StringUtil;
 
 /**
@@ -197,20 +195,20 @@ public class SelectionCommands {
     }
 
     @Command(
-        aliases = { "/chunk" },
-        usage = "[x,z координаты]",
-        flags = "sc",
-        desc = "Выделение текущего чанка.",
-        help =
-            "Set the selection to the chunk you are currently in.\n" +
-            "With the -s flag, your current selection is expanded\n" +
-            "to encompass all chunks that are part of it.\n\n" +
-            "Specifying coordinates will use those instead of your\n"+
-            "current position. Use -c to specify chunk coordinates,\n" +
-            "otherwise full coordinates will be implied.\n" +
-            "(for example, the coordinates 5,5 are the same as -c 0,0)",
-        min = 0,
-        max = 1
+            aliases = {"/chunk"},
+            usage = "[x,z координаты]",
+            flags = "sc",
+            desc = "Выделение текущего чанка.",
+            help =
+                    "Set the selection to the chunk you are currently in.\n" +
+                            "With the -s flag, your current selection is expanded\n" +
+                            "to encompass all chunks that are part of it.\n\n" +
+                            "Specifying coordinates will use those instead of your\n" +
+                            "current position. Use -c to specify chunk coordinates,\n" +
+                            "otherwise full coordinates will be implied.\n" +
+                            "(for example, the coordinates 5,5 are the same as -c 0,0)",
+            min = 0,
+            max = 1
     )
     @Logging(POSITION)
     @CommandPermissions("worldedit.selection.chunk")
@@ -348,45 +346,35 @@ public class SelectionCommands {
                 // Either a reverse amount or a direction
                 try {
                     reverseChange = args.getInteger(1);
-                    dir = we.getDirection(player, "me");
+                    dirs.add(we.getDirection(player, "me"));
                 } catch (NumberFormatException e) {
-                    dir = we.getDirection(player,
-                            args.getString(1).toLowerCase());
+                    if (args.getString(1).contains(",")) {
+                        String[] split = args.getString(1).split(",");
+                        for (String s : split) {
+                            dirs.add(we.getDirection(player, s.toLowerCase()));
+                        }
+                    } else {
+                        dirs.add(we.getDirection(player, args.getString(1).toLowerCase()));
+                    }
                 }
                 break;
 
             case 3:
                 // Both reverse amount and direction
                 reverseChange = args.getInteger(1);
-                dirs.add(we.getDirection(player, "me"));
-            } catch (NumberFormatException e) {
-                if (args.getString(1).contains(",")) {
-                    String[] split = args.getString(1).split(",");
+                if (args.getString(2).contains(",")) {
+                    String[] split = args.getString(2).split(",");
                     for (String s : split) {
                         dirs.add(we.getDirection(player, s.toLowerCase()));
                     }
                 } else {
-                    dirs.add(we.getDirection(player, args.getString(1).toLowerCase()));
+                    dirs.add(we.getDirection(player, args.getString(2).toLowerCase()));
                 }
-            }
-            break;
+                break;
 
-        case 3:
-            // Both reverse amount and direction
-            reverseChange = args.getInteger(1);
-            if (args.getString(2).contains(",")) {
-                String[] split = args.getString(2).split(",");
-                for (String s : split) {
-                    dirs.add(we.getDirection(player, s.toLowerCase()));
-                }
-            } else {
-                dirs.add(we.getDirection(player, args.getString(2).toLowerCase()));
-            }
-            break;
-
-        default:
-            dirs.add(we.getDirection(player, "me"));
-            break;
+            default:
+                dirs.add(we.getDirection(player, "me"));
+                break;
 
         }
 
@@ -432,47 +420,40 @@ public class SelectionCommands {
                 // Either a reverse amount or a direction
                 try {
                     reverseChange = args.getInteger(1);
-                    dir = we.getDirection(player, "me");
+                    dirs.add(we.getDirection(player, "me"));
                 } catch (NumberFormatException e) {
-                    dir = we.getDirection(player, args.getString(1).toLowerCase());
+                    if (args.getString(1).contains(",")) {
+                        String[] split = args.getString(1).split(",");
+                        for (String s : split) {
+                            dirs.add(we.getDirection(player, s.toLowerCase()));
+                        }
+                    } else {
+                        dirs.add(we.getDirection(player, args.getString(1).toLowerCase()));
+                    }
                 }
                 break;
 
             case 3:
                 // Both reverse amount and direction
                 reverseChange = args.getInteger(1);
-                dirs.add(we.getDirection(player, "me"));
-            } catch (NumberFormatException e) {
-                if (args.getString(1).contains(",")) {
-                    String[] split = args.getString(1).split(",");
+                if (args.getString(2).contains(",")) {
+                    String[] split = args.getString(2).split(",");
                     for (String s : split) {
                         dirs.add(we.getDirection(player, s.toLowerCase()));
                     }
                 } else {
-                    dirs.add(we.getDirection(player, args.getString(1).toLowerCase()));
+                    dirs.add(we.getDirection(player, args.getString(2).toLowerCase()));
                 }
-            }
-            break;
+                break;
 
-        case 3:
-            // Both reverse amount and direction
-            reverseChange = args.getInteger(1);
-            if (args.getString(2).contains(",")) {
-                String[] split = args.getString(2).split(",");
-                for (String s : split) {
-                    dirs.add(we.getDirection(player, s.toLowerCase()));
-                }
-            } else {
-                dirs.add(we.getDirection(player, args.getString(2).toLowerCase()));
-            }
-            break;
-
-        default:
-            dirs.add(we.getDirection(player, "me"));
-            break;
+            default:
+                dirs.add(we.getDirection(player, "me"));
+                break;
         }
 
-        try {
+        try
+
+        {
             Region region = session.getSelection(player.getWorld());
             int oldSize = region.getArea();
             if (reverseChange == 0) {
@@ -491,9 +472,14 @@ public class SelectionCommands {
 
 
             player.print("Регион уменьшен на " + (oldSize - newSize) + " " + StringUtil.plural((newSize - oldSize), "блок", "блока", "блоков") + ".");
-        } catch (RegionOperationException e) {
+        } catch (
+                RegionOperationException e
+                )
+
+        {
             player.printError(e.getMessage());
         }
+
     }
 
     @Command(
@@ -506,7 +492,7 @@ public class SelectionCommands {
     @Logging(REGION)
     @CommandPermissions("worldedit.selection.shift")
     public void shift(CommandContext args, LocalSession session, LocalPlayer player,
-            EditSession editSession) throws WorldEditException {
+                      EditSession editSession) throws WorldEditException {
 
         List<Vector> dirs = new ArrayList<Vector>();
         int change = args.getInteger(0);
@@ -623,11 +609,11 @@ public class SelectionCommands {
             Vector size = clipboard.getSize();
             Vector offset = clipboard.getOffset();
 
-        player.print("Размер: " + size);
-        player.print("Смещение: " + offset);
-        player.print("Диагональ: " + size.distance(Vector.ONE);
-        player.print("Количество блоков: "
-                         + (int) (size.getX() * size.getY() * size.getZ()));
+            player.print("Размер: " + size);
+            player.print("Смещение: " + offset);
+            player.print("Диагональ: " + size.distance(Vector.ONE));
+            player.print("Количество блоков: "
+                    + (int) (size.getX() * size.getY() * size.getZ()));
             return;
         }
 
@@ -661,7 +647,7 @@ public class SelectionCommands {
     )
     @CommandPermissions("worldedit.analysis.count")
     public void count(CommandContext args, LocalSession session, LocalPlayer player,
-            EditSession editSession) throws WorldEditException {
+                      EditSession editSession) throws WorldEditException {
 
         boolean useData = args.hasFlag('d');
         if (args.getString(0).contains(":")) {
@@ -681,20 +667,20 @@ public class SelectionCommands {
     }
 
     @Command(
-        aliases = { "/distr" },
-        usage = "",
-        desc = "Подсчет колличества блоков в выделенной территории.",
-        help =
-            "Считает колличество блоков в выделенной территории.\n" +
-            "Флаг -c считет блоки в буфере обмена.\n" +
-            "Флаг -d разбивает блоки по данным",
-        flags = "cd",
-        min = 0,
-        max = 0
+            aliases = {"/distr"},
+            usage = "",
+            desc = "Подсчет колличества блоков в выделенной территории.",
+            help =
+                    "Считает колличество блоков в выделенной территории.\n" +
+                            "Флаг -c считет блоки в буфере обмена.\n" +
+                            "Флаг -d разбивает блоки по данным",
+            flags = "cd",
+            min = 0,
+            max = 0
     )
     @CommandPermissions("worldedit.analysis.distr")
     public void distr(CommandContext args, LocalSession session, LocalPlayer player,
-            EditSession editSession) throws WorldEditException {
+                      EditSession editSession) throws WorldEditException {
 
         int size;
         boolean useData = args.hasFlag('d');
@@ -708,7 +694,7 @@ public class SelectionCommands {
             } else {
                 distribution = clip.getBlockDistribution();
             }
-            size = clip.getHeight() * clip.getLength() * clip.getWidth(); 
+            size = clip.getHeight() * clip.getLength() * clip.getWidth();
         } else {
             if (useData) {
                 distributionData = editSession.getBlockDistributionWithData(session.getSelection(player.getWorld()));
@@ -723,7 +709,7 @@ public class SelectionCommands {
             player.printError("В выделенной территории блоки не найдены.");
             return;
         }
-        
+
         player.print("В выделенной территории " + size + StringUtil.plural(size, " блок", " блока", " блоков"));
 
         if (useData) {
@@ -749,11 +735,11 @@ public class SelectionCommands {
     }
 
     @Command(
-        aliases = { "/sel", ";" },
-        usage = "[cuboid|extend|poly|ellipsoid|sphere|cyl|convex]",
-        desc = "Выбирает тип выделения региона",
-        min = 0,
-        max = 1
+            aliases = {"/sel", ";"},
+            usage = "[cuboid|extend|poly|ellipsoid|sphere|cyl|convex]",
+            desc = "Выбирает тип выделения региона",
+            min = 0,
+            max = 1
     )
     public void select(CommandContext args, LocalSession session, LocalPlayer player,
                        EditSession editSession) throws WorldEditException {

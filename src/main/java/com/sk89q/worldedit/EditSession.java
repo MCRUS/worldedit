@@ -521,7 +521,7 @@ public class EditSession {
      *
      * @param pos
      * @param block
-     * @param c 0-1 chance
+     * @param c     0-1 chance
      * @return whether a block was changed
      * @throws MaxChangedBlocksException
      */
@@ -605,8 +605,8 @@ public class EditSession {
      *
      * @param x
      * @param z
-     * @param minY minimal height
-     * @param maxY maximal height
+     * @param minY        minimal height
+     * @param maxY        maximal height
      * @param naturalOnly look at natural blocks or all blocks
      * @return height of highest block found or 'minY'
      */
@@ -736,7 +736,7 @@ public class EditSession {
                 while (true) {
                     walked.addFirst(current);
 
-                    assert(blockTypes.containsKey(current));
+                    assert (blockTypes.containsKey(current));
 
                     final BaseBlock baseBlock = blockTypes.get(current);
 
@@ -753,20 +753,19 @@ public class EditSession {
                                     walked.addFirst(upperBlock);
                                 }
                             }
-                        }
-                        break;
+                            break;
 
-                    case BlockID.MINECART_TRACKS:
-                    case BlockID.POWERED_RAIL:
-                    case BlockID.DETECTOR_RAIL:
-                    case BlockID.ACTIVATOR_RAIL:
-                        // Here, rails are hardcoded to be attached to the block below them.
-                        // They're also attached to the block they're ascending towards via BlockType.getAttachment.
-                        BlockVector lowerBlock = current.add(0, -1, 0).toBlockVector();
-                        if (blocks.contains(lowerBlock) && !walked.contains(lowerBlock)) {
-                            walked.addFirst(lowerBlock);
-                        }
-                        break;
+                        case BlockID.MINECART_TRACKS:
+                        case BlockID.POWERED_RAIL:
+                        case BlockID.DETECTOR_RAIL:
+                        case BlockID.ACTIVATOR_RAIL:
+                            // Here, rails are hardcoded to be attached to the block below them.
+                            // They're also attached to the block they're ascending towards via BlockType.getAttachment.
+                            BlockVector lowerBlock = current.add(0, -1, 0).toBlockVector();
+                            if (blocks.contains(lowerBlock) && !walked.contains(lowerBlock)) {
+                                walked.addFirst(lowerBlock);
+                            }
+                            break;
                     }
 
                     final PlayerDirection attachment = BlockType.getAttachment(type, data);
@@ -891,8 +890,8 @@ public class EditSession {
      * @param z
      * @param block
      * @param minY
-     * @throws MaxChangedBlocksException
      * @return
+     * @throws MaxChangedBlocksException
      */
     private int fillY(int x, int cy, int z, BaseBlock block, int minY)
             throws MaxChangedBlocksException {
@@ -996,8 +995,8 @@ public class EditSession {
      * @param z
      * @param pattern
      * @param minY
-     * @throws MaxChangedBlocksException
      * @return
+     * @throws MaxChangedBlocksException
      */
     private int fillY(int x, int cy, int z, Pattern pattern, int minY)
             throws MaxChangedBlocksException {
@@ -1892,7 +1891,7 @@ public class EditSession {
      * @throws RegionOperationException
      */
     public int moveRegion(Region region, Vector dir, int distance,
-            boolean copyAir, BaseBlock replace)
+                          boolean copyAir, BaseBlock replace)
             throws MaxChangedBlocksException, RegionOperationException {
         int affected = 0;
 
@@ -2129,8 +2128,8 @@ public class EditSession {
     /**
      * Makes a cylinder.
      *
-     * @param pos Center of the cylinder
-     * @param block The block pattern to use
+     * @param pos    Center of the cylinder
+     * @param block  The block pattern to use
      * @param radius The cylinder's radius
      * @param height The cylinder's up/down extent. If negative, extend downward.
      * @param filled If false, only a shell will be generated.
@@ -2144,12 +2143,12 @@ public class EditSession {
     /**
      * Makes a cylinder.
      *
-     * @param pos Center of the cylinder
-     * @param block The block pattern to use
+     * @param pos     Center of the cylinder
+     * @param block   The block pattern to use
      * @param radiusX The cylinder's largest north/south extent
      * @param radiusZ The cylinder's largest east/west extent
-     * @param height The cylinder's up/down extent. If negative, extend downward.
-     * @param filled If false, only a shell will be generated.
+     * @param height  The cylinder's up/down extent. If negative, extend downward.
+     * @param filled  If false, only a shell will be generated.
      * @return number of blocks changed
      * @throws MaxChangedBlocksException
      */
@@ -2179,11 +2178,13 @@ public class EditSession {
         final int ceilRadiusZ = (int) Math.ceil(radiusZ);
 
         double nextXn = 0;
-        forX: for (int x = 0; x <= ceilRadiusX; ++x) {
+        forX:
+        for (int x = 0; x <= ceilRadiusX; ++x) {
             final double xn = nextXn;
             nextXn = (x + 1) * invRadiusX;
             double nextZn = 0;
-            forZ: for (int z = 0; z <= ceilRadiusZ; ++z) {
+            forZ:
+            for (int z = 0; z <= ceilRadiusZ; ++z) {
                 final double zn = nextZn;
                 nextZn = (z + 1) * invRadiusZ;
 
@@ -2224,8 +2225,8 @@ public class EditSession {
     /**
      * Makes a sphere.
      *
-     * @param pos Center of the sphere or ellipsoid
-     * @param block The block pattern to use
+     * @param pos    Center of the sphere or ellipsoid
+     * @param block  The block pattern to use
      * @param radius The sphere's radius
      * @param filled If false, only a shell will be generated.
      * @return number of blocks changed
@@ -2238,12 +2239,12 @@ public class EditSession {
     /**
      * Makes a sphere or ellipsoid.
      *
-     * @param pos Center of the sphere or ellipsoid
-     * @param block The block pattern to use
+     * @param pos     Center of the sphere or ellipsoid
+     * @param block   The block pattern to use
      * @param radiusX The sphere/ellipsoid's largest north/south extent
      * @param radiusY The sphere/ellipsoid's largest up/down extent
      * @param radiusZ The sphere/ellipsoid's largest east/west extent
-     * @param filled If false, only a shell will be generated.
+     * @param filled  If false, only a shell will be generated.
      * @return number of blocks changed
      * @throws MaxChangedBlocksException
      */
@@ -2263,15 +2264,18 @@ public class EditSession {
         final int ceilRadiusZ = (int) Math.ceil(radiusZ);
 
         double nextXn = 0;
-        forX: for (int x = 0; x <= ceilRadiusX; ++x) {
+        forX:
+        for (int x = 0; x <= ceilRadiusX; ++x) {
             final double xn = nextXn;
             nextXn = (x + 1) * invRadiusX;
             double nextYn = 0;
-            forY: for (int y = 0; y <= ceilRadiusY; ++y) {
+            forY:
+            for (int y = 0; y <= ceilRadiusY; ++y) {
                 final double yn = nextYn;
                 nextYn = (y + 1) * invRadiusY;
                 double nextZn = 0;
-                forZ: for (int z = 0; z <= ceilRadiusZ; ++z) {
+                forZ:
+                for (int z = 0; z <= ceilRadiusZ; ++z) {
                     final double zn = nextZn;
                     nextZn = (z + 1) * invRadiusZ;
 
@@ -2524,7 +2528,8 @@ public class EditSession {
                     continue;
                 }
 
-                loop: for (int y = world.getMaxY(); y >= 1; --y) {
+                loop:
+                for (int y = world.getMaxY(); y >= 1; --y) {
                     final Vector pt = new Vector(x, y, z);
                     final int id = getBlockType(pt);
                     final int data = getBlockData(pt);
@@ -2536,21 +2541,16 @@ public class EditSession {
                             }
                             break loop;
 
-                    case BlockID.WATER:
-                    case BlockID.STATIONARY_WATER:
-                    case BlockID.LAVA:
-                    case BlockID.STATIONARY_LAVA:
-                        // break on liquids...
-                        break loop;
-
-                    default:
-                        // ...and all non-passable blocks
-                        if (!BlockType.canPassThrough(id, data)) {
+                        case BlockID.WATER:
+                        case BlockID.STATIONARY_WATER:
+                        case BlockID.LAVA:
+                        case BlockID.STATIONARY_LAVA:
+                            // break on liquids...
                             break loop;
 
                         default:
                             // ...and all non-passable blocks
-                            if (!BlockType.canPassThrough(id)) {
+                            if (!BlockType.canPassThrough(id, data)) {
                                 break loop;
                             }
                     }
@@ -2566,6 +2566,7 @@ public class EditSession {
      *
      * @param basePos
      */
+
     private void makePumpkinPatch(Vector basePos)
             throws MaxChangedBlocksException {
         // BaseBlock logBlock = new BaseBlock(BlockID.LOG);
@@ -2931,21 +2932,20 @@ public class EditSession {
     }
 
     private static final Vector[] recurseDirections = {
-        PlayerDirection.NORTH.vector(),
-        PlayerDirection.EAST.vector(),
-        PlayerDirection.SOUTH.vector(),
-        PlayerDirection.WEST.vector(),
-        PlayerDirection.UP.vector(),
-        PlayerDirection.DOWN.vector(),
+            PlayerDirection.NORTH.vector(),
+            PlayerDirection.EAST.vector(),
+            PlayerDirection.SOUTH.vector(),
+            PlayerDirection.WEST.vector(),
+            PlayerDirection.UP.vector(),
+            PlayerDirection.DOWN.vector(),
     };
 
     /**
      * Hollows out the region (Semi-well-defined for non-cuboid selections).
      *
-     * @param region the region to hollow out.
+     * @param region    the region to hollow out.
      * @param thickness the thickness of the shell to leave (manhattan distance)
-     * @param pattern The block pattern to use
-     *
+     * @param pattern   The block pattern to use
      * @return number of blocks affected
      * @throws MaxChangedBlocksException
      */
@@ -2987,8 +2987,9 @@ public class EditSession {
 
         for (int i = 1; i < thickness; ++i) {
             final Set<BlockVector> newOutside = new HashSet<BlockVector>();
-            outer: for (BlockVector position : region) {
-                for (Vector recurseDirection: recurseDirections) {
+            outer:
+            for (BlockVector position : region) {
+                for (Vector recurseDirection : recurseDirections) {
                     BlockVector neighbor = position.add(recurseDirection).toBlockVector();
 
                     if (outside.contains(neighbor)) {
@@ -3001,8 +3002,9 @@ public class EditSession {
             outside.addAll(newOutside);
         }
 
-        outer: for (BlockVector position : region) {
-            for (Vector recurseDirection: recurseDirections) {
+        outer:
+        for (BlockVector position : region) {
+            for (Vector recurseDirection : recurseDirections) {
                 BlockVector neighbor = position.add(recurseDirection).toBlockVector();
 
                 if (outside.contains(neighbor)) {
@@ -3022,11 +3024,10 @@ public class EditSession {
      * Draws a line (out of blocks) between two vectors.
      *
      * @param pattern The block pattern used to draw the line.
-     * @param pos1 One of the points that define the line.
-     * @param pos2 The other point that defines the line.
-     * @param radius The radius (thickness) of the line.
-     * @param filled If false, only a shell will be generated.
-     *
+     * @param pos1    One of the points that define the line.
+     * @param pos2    The other point that defines the line.
+     * @param radius  The radius (thickness) of the line.
+     * @param filled  If false, only a shell will be generated.
      * @return number of blocks affected
      * @throws MaxChangedBlocksException
      */
@@ -3071,8 +3072,8 @@ public class EditSession {
         if (Math.max(Math.max(dx, dy), dz) == dz && notdrawn) {
             for (int domstep = 0; domstep <= dz; domstep++) {
                 tipz = z1 + domstep * (z2 - z1 > 0 ? 1 : -1);
-                tipy = (int) Math.round(y1 + domstep * ((double) dy) / ((double) dz) * (y2-y1>0 ? 1 : -1));
-                tipx = (int) Math.round(x1 + domstep * ((double) dx) / ((double) dz) * (x2-x1>0 ? 1 : -1));
+                tipy = (int) Math.round(y1 + domstep * ((double) dy) / ((double) dz) * (y2 - y1 > 0 ? 1 : -1));
+                tipx = (int) Math.round(x1 + domstep * ((double) dx) / ((double) dz) * (x2 - x1 > 0 ? 1 : -1));
 
                 vset.add(new Vector(tipx, tipy, tipz));
             }
@@ -3089,15 +3090,14 @@ public class EditSession {
     /**
      * Draws a spline (out of blocks) between specified vectors.
      *
-     * @param pattern The block pattern used to draw the spline.
+     * @param pattern     The block pattern used to draw the spline.
      * @param nodevectors The list of vectors to draw through.
-     * @param tension The tension of every node.
-     * @param bias The bias of every node.
-     * @param continuity The continuity of every node.
-     * @param quality The quality of the spline. Must be greater than 0.
-     * @param radius The radius (thickness) of the spline.
-     * @param filled If false, only a shell will be generated.
-     *
+     * @param tension     The tension of every node.
+     * @param bias        The bias of every node.
+     * @param continuity  The continuity of every node.
+     * @param quality     The quality of the spline. Must be greater than 0.
+     * @param radius      The radius (thickness) of the spline.
+     * @param filled      If false, only a shell will be generated.
      * @return number of blocks affected
      * @throws MaxChangedBlocksException
      */
@@ -3168,11 +3168,11 @@ public class EditSession {
         for (Vector v : vset) {
             double x = v.getX(), y = v.getY(), z = v.getZ();
             if (!(vset.contains(new Vector(x + 1, y, z)) &&
-            vset.contains(new Vector(x - 1, y, z)) &&
-            vset.contains(new Vector(x, y + 1, z)) &&
-            vset.contains(new Vector(x, y - 1, z)) &&
-            vset.contains(new Vector(x, y, z + 1)) &&
-            vset.contains(new Vector(x, y, z - 1)))) {
+                    vset.contains(new Vector(x - 1, y, z)) &&
+                    vset.contains(new Vector(x, y + 1, z)) &&
+                    vset.contains(new Vector(x, y - 1, z)) &&
+                    vset.contains(new Vector(x, y, z + 1)) &&
+                    vset.contains(new Vector(x, y, z - 1)))) {
                 returnset.add(v);
             }
         }
@@ -3180,7 +3180,7 @@ public class EditSession {
     }
 
     private int setBlocks(Set<Vector> vset, Pattern pattern)
-        throws MaxChangedBlocksException {
+            throws MaxChangedBlocksException {
 
         int affected = 0;
         for (Vector v : vset) {
@@ -3207,7 +3207,7 @@ public class EditSession {
                 continue;
             }
 
-            for (Vector recurseDirection: recurseDirections) {
+            for (Vector recurseDirection : recurseDirections) {
                 queue.addLast(current.add(recurseDirection).toBlockVector());
             }
         } // while
