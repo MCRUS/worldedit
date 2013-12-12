@@ -186,19 +186,27 @@ public enum ItemType {
     PRESSURE_PLATE_HEAVY(BlockID.PRESSURE_PLATE_HEAVY, "Weighted Pressure Plate (Heavy)", "heavypressureplate"),
     COMPARATOR_OFF(BlockID.COMPARATOR_OFF, "Redstone Comparator (inactive)", "redstonecomparator", "comparator"),
     COMPARATOR_ON(BlockID.COMPARATOR_ON, "Redstone Comparator (active)", "redstonecomparatoron", "comparatoron"),
-    DAYLIGHT_SENSOR(BlockID.DAYLIGHT_SENSOR, "Daylight Sesnor", "daylightsensor", "lightsensor"),
+    DAYLIGHT_SENSOR(BlockID.DAYLIGHT_SENSOR, "Daylight Sensor", "daylightsensor", "lightsensor", "daylightdetector"),
     REDSTONE_BLOCK(BlockID.REDSTONE_BLOCK, "Block of Redstone", "redstoneblock", "blockofredstone"),
     QUARTZ_ORE(BlockID.QUARTZ_ORE, "Nether Quartz Ore", "quartzore", "netherquartzore"),
     HOPPER(BlockID.HOPPER, "Hopper", "hopper"),
-    QUARTZ_BLOCK(BlockID.QUARTZ_BLOCK, "Block of Quartz", "quartzblock"),
+    QUARTZ_BLOCK(BlockID.QUARTZ_BLOCK, "Block of Quartz", "quartzblock", "quartz"),
     QUARTZ_STAIRS(BlockID.QUARTZ_STAIRS, "Quartz Stairs", "quartzstairs"),
     ACTIVATOR_RAIL(BlockID.ACTIVATOR_RAIL, "Activator Rail", "activatorrail", "tntrail", "activatortrack"),
     DROPPER(BlockID.DROPPER, "Dropper", "dropper"),
-    STAINED_CLAY(BlockID.STAINED_CLAY, "Stained clay", "stainedclay"),
+    STAINED_CLAY(BlockID.STAINED_CLAY, "Stained Clay", "stainedclay", "stainedhardenedclay"),
+    STAINED_GLASS_PANE(BlockID.STAINED_GLASS_PANE, "Stained Glass Pane", "stainedglasspane"),
+    LEAVES2(BlockID.LEAVES2, "Leaves", "leaves2", "acacialeaves", "darkoakleaves"),
+    LOG2(BlockID.LOG2, "Log", "log2", "acacia", "darkoak"),
+    ACACIA_STAIRS(BlockID.ACACIA_STAIRS, "Acacia Wood Stairs", "acaciawoodstairs", "acaciastairs"),
+    DARK_OAK_STAIRS(BlockID.DARK_OAK_STAIRS, "Dark Oak Wood Stairs", "darkoakwoodstairs", "darkoakstairs"),
     HAY_BLOCK(BlockID.HAY_BLOCK, "Hay Block", "hayblock", "haybale", "wheatbale"),
     CARPET(BlockID.CARPET, "Carpet", "carpet"),
     HARDENED_CLAY(BlockID.HARDENED_CLAY, "Hardened Clay", "hardenedclay", "hardclay"),
     COAL_BLOCK(BlockID.COAL_BLOCK, "Block of Coal", "coalblock", "blockofcoal"),
+    PACKED_ICE(BlockID.PACKED_ICE, "Packed Ice", "packedice", "hardice"),
+    DOUBLE_PLANT(BlockID.DOUBLE_PLANT, "Large Flowers", "largeflowers", "doubleflowers"),
+
 
     // Items
     IRON_SHOVEL(ItemID.IRON_SHOVEL, "Железная лопата", "ironshovel"),
@@ -582,6 +590,7 @@ public enum ItemType {
         shouldNotStack.add(ItemID.HORSE_ARMOR_IRON);
         shouldNotStack.add(ItemID.HORSE_ARMOR_GOLD);
         shouldNotStack.add(ItemID.HORSE_ARMOR_DIAMOND);
+        shouldNotStack.add(ItemID.COMMAND_BLOCK_MINECART);
         shouldNotStack.add(ItemID.DISC_13);
         shouldNotStack.add(ItemID.DISC_CAT);
         shouldNotStack.add(ItemID.DISC_BLOCKS);
@@ -608,13 +617,16 @@ public enum ItemType {
 
     private static final Set<Integer> usesDamageValue = new HashSet<Integer>();
     static {
+        usesDamageValue.add(BlockID.DIRT);
         usesDamageValue.add(BlockID.WOOD);
         usesDamageValue.add(BlockID.SAPLING);
+        usesDamageValue.add(BlockID.SAND);
         usesDamageValue.add(BlockID.LOG);
         usesDamageValue.add(BlockID.LEAVES);
         usesDamageValue.add(BlockID.SANDSTONE);
         usesDamageValue.add(BlockID.LONG_GRASS);
         usesDamageValue.add(BlockID.CLOTH);
+        usesDamageValue.add(BlockID.RED_FLOWER);
         usesDamageValue.add(BlockID.DOUBLE_STEP);
         usesDamageValue.add(BlockID.STEP);
         usesDamageValue.add(BlockID.SILVERFISH_BLOCK);
@@ -636,6 +648,8 @@ public enum ItemType {
         usesDamageValue.add(ItemID.MAP);
         usesDamageValue.add(ItemID.HEAD);
         usesDamageValue.add(ItemID.GOLD_APPLE);
+        usesDamageValue.add(ItemID.RAW_FISH);
+        usesDamageValue.add(ItemID.COOKED_FISH);
     }
 
     /**

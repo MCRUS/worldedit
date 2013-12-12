@@ -36,170 +36,172 @@ import com.sk89q.worldedit.foundation.Block;
  * @author sk89q
  */
 public enum BlockType {
-    AIR(BlockID.AIR, "Воздух", "air"),
-    STONE(BlockID.STONE, "Камень", "stone", "rock"),
-    GRASS(BlockID.GRASS, "Трава", "grass"),
-    DIRT(BlockID.DIRT, "Земля", "dirt"),
-    COBBLESTONE(BlockID.COBBLESTONE, "Булыжник", "cobblestone", "cobble"),
-    WOOD(BlockID.WOOD, "Доски", "wood", "woodplank", "plank", "woodplanks", "planks"),
-    SAPLING(BlockID.SAPLING, "Саженец", "sapling", "seedling"),
-    BEDROCK(BlockID.BEDROCK, "Коренная порода", "adminium", "bedrock"),
-    WATER(BlockID.WATER, "Вода", "watermoving", "movingwater", "flowingwater", "waterflowing"),
-    STATIONARY_WATER(BlockID.STATIONARY_WATER, "Вода (стоячая)", "water", "waterstationary", "stationarywater", "stillwater"),
-    LAVA(BlockID.LAVA, "Лава", "lavamoving", "movinglava", "flowinglava", "lavaflowing"),
-    STATIONARY_LAVA(BlockID.STATIONARY_LAVA, "Лава (стоячая)", "lava", "lavastationary", "stationarylava", "stilllava"),
-    SAND(BlockID.SAND, "Песок", "sand"),
-    GRAVEL(BlockID.GRAVEL, "Гравий", "gravel"),
-    GOLD_ORE(BlockID.GOLD_ORE, "Золотая руда", "goldore"),
-    IRON_ORE(BlockID.IRON_ORE, "Железная руда", "ironore"),
-    COAL_ORE(BlockID.COAL_ORE, "Уголь", "coalore"),
-    LOG(BlockID.LOG, "Дерево", "log", "tree", "pine", "oak", "birch", "redwood"),
-    LEAVES(BlockID.LEAVES, "Листья", "leaves", "leaf"),
-    SPONGE(BlockID.SPONGE, "Губка", "sponge"),
-    GLASS(BlockID.GLASS, "Стекло", "glass"),
-    LAPIS_LAZULI_ORE(BlockID.LAPIS_LAZULI_ORE, "Лазуритовая руда", "lapislazuliore", "blueore", "lapisore"),
-    LAPIS_LAZULI(BlockID.LAPIS_LAZULI_BLOCK, "Лазурит", "lapislazuli", "lapislazuliblock", "bluerock"),
-    DISPENSER(BlockID.DISPENSER, "Раздатчик", "dispenser"),
-    SANDSTONE(BlockID.SANDSTONE, "Песчаник", "sandstone"),
-    NOTE_BLOCK(BlockID.NOTE_BLOCK, "Нотный блок", "musicblock", "noteblock", "note", "music", "instrument"),
-    BED(BlockID.BED, "Кровать", "bed"),
-    POWERED_RAIL(BlockID.POWERED_RAIL, "Энергорельсы", "poweredrail", "boosterrail", "poweredtrack", "boostertrack", "booster"),
-    DETECTOR_RAIL(BlockID.DETECTOR_RAIL, "Нажимные рельсы", "detectorrail", "detector"),
-    PISTON_STICKY_BASE(BlockID.PISTON_STICKY_BASE, "Липкий поршень", "stickypiston"),
-    WEB(BlockID.WEB, "Паутина", "web", "spiderweb"),
-    LONG_GRASS(BlockID.LONG_GRASS, "Высокая трава", "longgrass", "tallgrass"),
-    DEAD_BUSH(BlockID.DEAD_BUSH, "Куст", "deadbush", "shrub", "deadshrub", "tumbleweed"),
-    PISTON_BASE(BlockID.PISTON_BASE, "Поршень", "piston"),
-    PISTON_EXTENSION(BlockID.PISTON_EXTENSION, "Лицевая часть поршня", "pistonextendsion", "pistonhead"),
-    CLOTH(BlockID.CLOTH, "Шерсть", "cloth", "wool"),
-    PISTON_MOVING_PIECE(BlockID.PISTON_MOVING_PIECE, "Двигающайся часть поршня", "movingpiston"),
-    YELLOW_FLOWER(BlockID.YELLOW_FLOWER, "Желтый цветок", "yellowflower", "flower"),
-    RED_FLOWER(BlockID.RED_FLOWER, "Красная роза", "redflower", "redrose", "rose"),
-    BROWN_MUSHROOM(BlockID.BROWN_MUSHROOM, "Коричневый гриб", "brownmushroom", "mushroom"),
-    RED_MUSHROOM(BlockID.RED_MUSHROOM, "Красный гриб", "redmushroom"),
-    GOLD_BLOCK(BlockID.GOLD_BLOCK, "Золотой блок", "gold", "goldblock"),
-    IRON_BLOCK(BlockID.IRON_BLOCK, "Железный блок", "iron", "ironblock"),
-    DOUBLE_STEP(BlockID.DOUBLE_STEP, "Двойная плита", "doubleslab", "doublestoneslab", "doublestep"),
-    STEP(BlockID.STEP, "Каменная плита", "slab", "stoneslab", "step", "halfstep"),
-    BRICK(BlockID.BRICK, "Кирпич", "brick", "brickblock"),
-    TNT(BlockID.TNT, "Динамит", "tnt", "c4", "explosive"),
-    BOOKCASE(BlockID.BOOKCASE, "Книжная полка", "bookshelf", "bookshelves", "bookcase", "bookcases"),
-    MOSSY_COBBLESTONE(BlockID.MOSSY_COBBLESTONE, "Зашмелый булыжник", "mossycobblestone", "mossstone", "mossystone", "mosscobble", "mossycobble", "moss", "mossy", "sossymobblecone"),
-    OBSIDIAN(BlockID.OBSIDIAN, "Обсидиан", "obsidian"),
-    TORCH(BlockID.TORCH, "Факел", "torch", "light", "candle"),
-    FIRE(BlockID.FIRE, "Огонь", "fire", "flame", "flames"),
-    MOB_SPAWNER(BlockID.MOB_SPAWNER, "Спаунер мобов", "mobspawner", "spawner"),
-    WOODEN_STAIRS(BlockID.WOODEN_STAIRS, "Деревянная ступенька", "woodstair", "woodstairs", "woodenstair", "woodenstairs"),
-    CHEST(BlockID.CHEST, "Сундук", "chest", "storage", "storagechest"),
-    REDSTONE_WIRE(BlockID.REDSTONE_WIRE, "Красный камень", "redstone", "redstoneblock"),
-    DIAMOND_ORE(BlockID.DIAMOND_ORE, "Алмазная руда", "diamondore"),
-    DIAMOND_BLOCK(BlockID.DIAMOND_BLOCK, "Алмазный блок", "diamond", "diamondblock"),
-    WORKBENCH(BlockID.WORKBENCH, "Верстак", "workbench", "table", "craftingtable", "crafting"),
-    CROPS(BlockID.CROPS, "Семена", "crops", "crop", "plant", "plants"),
-    SOIL(BlockID.SOIL, "Грядка", "soil", "farmland"),
-    FURNACE(BlockID.FURNACE, "Печь", "furnace"),
-    BURNING_FURNACE(BlockID.BURNING_FURNACE, "Горящяя печь", "burningfurnace", "litfurnace"),
-    SIGN_POST(BlockID.SIGN_POST, "Табличка", "sign", "signpost"),
-    WOODEN_DOOR(BlockID.WOODEN_DOOR, "Деревянная дверь", "wooddoor", "woodendoor", "door"),
-    LADDER(BlockID.LADDER, "Лестница", "ladder"),
-    MINECART_TRACKS(BlockID.MINECART_TRACKS, "Рельсы", "track", "tracks", "minecrattrack", "minecarttracks", "rails", "rail"),
-    COBBLESTONE_STAIRS(BlockID.COBBLESTONE_STAIRS, "Ступеньки из булыжника", "cobblestonestair", "cobblestonestairs", "cobblestair", "cobblestairs"),
-    WALL_SIGN(BlockID.WALL_SIGN, "Табличка на стене", "wallsign"),
-    LEVER(BlockID.LEVER, "Рычаг", "lever", "switch", "stonelever", "stoneswitch"),
-    STONE_PRESSURE_PLATE(BlockID.STONE_PRESSURE_PLATE, "Каменная нажимная плита", "stonepressureplate", "stoneplate"),
-    IRON_DOOR(BlockID.IRON_DOOR, "Железная дверь", "irondoor"),
-    WOODEN_PRESSURE_PLATE(BlockID.WOODEN_PRESSURE_PLATE, "Деревянная нажимная плита", "woodpressureplate", "woodplate", "woodenpressureplate", "woodenplate", "plate", "pressureplate"),
-    REDSTONE_ORE(BlockID.REDSTONE_ORE, "Руда красного камня", "redstoneore"),
-    GLOWING_REDSTONE_ORE(BlockID.GLOWING_REDSTONE_ORE, "Светящиеся руда красного камня", "glowingredstoneore"),
-    REDSTONE_TORCH_OFF(BlockID.REDSTONE_TORCH_OFF, "Красный факел (выкл)", "redstonetorchoff", "rstorchoff"),
-    REDSTONE_TORCH_ON(BlockID.REDSTONE_TORCH_ON, "Красный факел (вкл)", "redstonetorch", "redstonetorchon", "rstorchon", "redtorch"),
-    STONE_BUTTON(BlockID.STONE_BUTTON, "Каменная кнопка", "stonebutton", "button"),
-    SNOW(BlockID.SNOW, "Снег", "snow"),
-    ICE(BlockID.ICE, "Лёд", "ice"),
-    SNOW_BLOCK(BlockID.SNOW_BLOCK, "Снежный блок", "snowblock"),
-    CACTUS(BlockID.CACTUS, "Кактус", "cactus", "cacti"),
-    CLAY(BlockID.CLAY, "Глина", "clay"),
-    SUGAR_CANE(BlockID.REED, "Тростник", "reed", "cane", "sugarcane", "sugarcanes", "vine", "vines"),
-    JUKEBOX(BlockID.JUKEBOX, "Проигрыватель", "jukebox", "stereo", "recordplayer"),
-    FENCE(BlockID.FENCE, "Забор", "fence"),
-    PUMPKIN(BlockID.PUMPKIN, "Тыква", "pumpkin"),
-    NETHERRACK(BlockID.NETHERRACK, "Адский камень", "redmossycobblestone", "redcobblestone", "redmosstone", "redcobble", "netherstone", "netherrack", "nether", "hellstone"),
-    SOUL_SAND(BlockID.SLOW_SAND, "Песок душ", "slowmud", "mud", "soulsand", "hellmud"),
-    GLOWSTONE(BlockID.LIGHTSTONE, "Светокамень", "brittlegold", "glowstone", "lightstone", "brimstone", "australium"),
-    PORTAL(BlockID.PORTAL, "Портал", "portal"),
-    JACK_O_LANTERN(BlockID.JACKOLANTERN, "Светильник Джека", "pumpkinlighted", "pumpkinon", "litpumpkin", "jackolantern"),
-    CAKE(BlockID.CAKE_BLOCK, "Торт", "cake", "cakeblock"),
-    REDSTONE_REPEATER_OFF(BlockID.REDSTONE_REPEATER_OFF, "Повторитель (выкл)", "diodeoff", "redstonerepeater", "repeateroff", "delayeroff"),
-    REDSTONE_REPEATER_ON(BlockID.REDSTONE_REPEATER_ON, "Повторитель (вкл)", "diodeon", "redstonerepeateron", "repeateron", "delayeron"),
-    LOCKED_CHEST(BlockID.LOCKED_CHEST, "Закрытый сундук", "lockedchest", "steveco", "supplycrate", "valveneedstoworkonep3nottf2kthx"),
-    TRAP_DOOR(BlockID.TRAP_DOOR, "Часть двери", "trapdoor", "hatch", "floordoor"),
-    SILVERFISH_BLOCK(BlockID.SILVERFISH_BLOCK, "Блок чешуйницы", "silverfish", "silver"),
-    STONE_BRICK(BlockID.STONE_BRICK, "Каменный кирпич", "stonebrick", "sbrick", "smoothstonebrick"),
-    RED_MUSHROOM_CAP(BlockID.RED_MUSHROOM_CAP, "Красный гриб", "giantmushroomred", "redgiantmushroom", "redmushroomcap"),
-    BROWN_MUSHROOM_CAP(BlockID.BROWN_MUSHROOM_CAP, "Коричневый гриб", "giantmushroombrown", "browngiantmushoom", "brownmushroomcap"),
-    IRON_BARS(BlockID.IRON_BARS, "Железные прутья", "ironbars", "ironfence"),
-    GLASS_PANE(BlockID.GLASS_PANE, "Стеклянная панель", "window", "glasspane", "glasswindow"),
-    MELON_BLOCK(BlockID.MELON_BLOCK, "Арбузный блок", "melonblock"),
-    PUMPKIN_STEM(BlockID.PUMPKIN_STEM, "Тыквенный стебель", "pumpkinstem"),
-    MELON_STEM(BlockID.MELON_STEM, "Арбузный стебель", "melonstem"),
-    VINE(BlockID.VINE, "Лиана", "vine", "vines", "creepers"),
-    FENCE_GATE(BlockID.FENCE_GATE, "Калитка", "fencegate", "gate"),
-    BRICK_STAIRS(BlockID.BRICK_STAIRS, "Кирпичные ступеньки", "brickstairs", "bricksteps"),
-    STONE_BRICK_STAIRS(BlockID.STONE_BRICK_STAIRS, "Каменно-кирпичные ступеньки", "stonebrickstairs", "smoothstonebrickstairs"),
-    MYCELIUM(BlockID.MYCELIUM, "Мицелий", "fungus", "mycel"),
-    LILY_PAD(BlockID.LILY_PAD, "Кувшинка", "lilypad", "waterlily"),
-    NETHER_BRICK(BlockID.NETHER_BRICK, "Адский кирпич", "netherbrick"),
-    NETHER_BRICK_FENCE(BlockID.NETHER_BRICK_FENCE, "Адский забор", "netherbrickfence", "netherfence"),
-    NETHER_BRICK_STAIRS(BlockID.NETHER_BRICK_STAIRS, "Адские ступеньки", "netherbrickstairs", "netherbricksteps", "netherstairs", "nethersteps"),
-    NETHER_WART(BlockID.NETHER_WART, "Адский нарост", "netherwart", "netherstalk"),
-    ENCHANTMENT_TABLE(BlockID.ENCHANTMENT_TABLE, "Стол зачарований", "enchantmenttable", "enchanttable"),
-    BREWING_STAND(BlockID.BREWING_STAND, "Варочная стойка", "brewingstand"),
-    CAULDRON(BlockID.CAULDRON, "Котёл"),
-    END_PORTAL(BlockID.END_PORTAL, "Портал в край", "endportal", "blackstuff", "airportal", "weirdblackstuff"),
-    END_PORTAL_FRAME(BlockID.END_PORTAL_FRAME, "Портал в край (часть)", "endportalframe", "airportalframe", "crystalblock"),
-    END_STONE(BlockID.END_STONE, "Камень края", "endstone", "enderstone", "endersand"),
-    DRAGON_EGG(BlockID.DRAGON_EGG, "Яйцо дракона", "dragonegg", "dragons"),
-    REDSTONE_LAMP_OFF(BlockID.REDSTONE_LAMP_OFF, "Лампа (выкл)", "redstonelamp", "redstonelampoff", "rslamp", "rslampoff", "rsglow", "rsglowoff"),
-    REDSTONE_LAMP_ON(BlockID.REDSTONE_LAMP_ON, "Лампа (вкл)", "redstonelampon", "rslampon", "rsglowon"),
-    DOUBLE_WOODEN_STEP(BlockID.DOUBLE_WOODEN_STEP, "Двойной деревянная полублок", "doublewoodslab", "doublewoodstep"),
-    WOODEN_STEP(BlockID.WOODEN_STEP, "Деревянный полублок", "woodenslab", "woodslab", "woodstep", "woodhalfstep"),
-    COCOA_PLANT(BlockID.COCOA_PLANT, "Какао-бобы", "cocoplant", "cocoaplant"),
-    SANDSTONE_STAIRS(BlockID.SANDSTONE_STAIRS, "Ступеньки из песчаника", "sandstairs", "sandstonestairs"),
-    EMERALD_ORE(BlockID.EMERALD_ORE, "Изумрудная руда", "emeraldore"),
-    ENDER_CHEST(BlockID.ENDER_CHEST, "Эндерсундук", "enderchest"),
-    TRIPWIRE_HOOK(BlockID.TRIPWIRE_HOOK, "Крюк", "tripwirehook"),
-    TRIPWIRE(BlockID.TRIPWIRE, "Крюк", "tripwire", "string"),
-    EMERALD_BLOCK(BlockID.EMERALD_BLOCK, "Изумрудный блок", "emeraldblock", "emerald"),
-    SPRUCE_WOOD_STAIRS(BlockID.SPRUCE_WOOD_STAIRS, "Ступеньки из сосновой древесины", "sprucestairs", "sprucewoodstairs"),
-    BIRCH_WOOD_STAIRS(BlockID.BIRCH_WOOD_STAIRS, "Ступеньки из древесины берёзы", "birchstairs", "birchwoodstairs"),
-    JUNGLE_WOOD_STAIRS(BlockID.JUNGLE_WOOD_STAIRS, "Ступеньки из тропической древесины", "junglestairs", "junglewoodstairs"),
-    COMMAND_BLOCK(BlockID.COMMAND_BLOCK, "Командный блок", "commandblock", "cmdblock", "command", "cmd"),
-    BEACON(BlockID.BEACON, "Маяк", "beacon", "beaconblock"),
-    COBBLESTONE_WALL(BlockID.COBBLESTONE_WALL, "Стена из булыжника", "cobblestonewall", "cobblewall"),
-    FLOWER_POT(BlockID.FLOWER_POT, "Цветочный горшок", "flowerpot", "plantpot", "pot"),
-    CARROTS(BlockID.CARROTS, "Морковь", "carrots", "carrotsplant", "carrotsblock"),
-    POTATOES(BlockID.POTATOES, "Картофель", "patatoes", "potatoesblock"),
-    WOODEN_BUTTON(BlockID.WOODEN_BUTTON, "Деревянная кнопка", "woodbutton", "woodenbutton"),
-    HEAD(BlockID.HEAD, "Голова", "head", "headmount", "mount"),
-    ANVIL(BlockID.ANVIL, "Наковальня", "anvil", "blacksmith"),
-    TRAPPED_CHEST(BlockID.TRAPPED_CHEST, "Сундук-ловушка", "trappedchest", "redstonechest"),
-    PRESSURE_PLATE_LIGHT(BlockID.PRESSURE_PLATE_LIGHT, "Утяжелённая нажимная пластина (Лёгкая)", "lightpressureplate"),
-    PRESSURE_PLATE_HEAVY(BlockID.PRESSURE_PLATE_HEAVY, "Утяжелённая нажимная пластина (Тяжёлая)", "heavypressureplate"),
-    COMPARATOR_OFF(BlockID.COMPARATOR_OFF, "Компаратор (не активный)", "redstonecomparator", "comparator"),
-    COMPARATOR_ON(BlockID.COMPARATOR_ON, "Компаратор (активный)", "redstonecomparatoron", "comparatoron"),
-    DAYLIGHT_SENSOR(BlockID.DAYLIGHT_SENSOR, "Датчик дневного света", "daylightsensor", "lightsensor"),
-    REDSTONE_BLOCK(BlockID.REDSTONE_BLOCK, "Блок красного камня", "redstoneblock", "blockofredstone"),
-    QUARTZ_ORE(BlockID.QUARTZ_ORE, "Кварцевая руда Нижнего Мира", "quartzore", "netherquartzore"),
-    HOPPER(BlockID.HOPPER, "Загрузочная воронка", "hopper"),
-    QUARTZ_BLOCK(BlockID.QUARTZ_BLOCK, "Блок кварца", "quartzblock", "quartz"),
-    QUARTZ_STAIRS(BlockID.QUARTZ_STAIRS, "Кварцевые ступеньки", "quartzstairs"),
-    ACTIVATOR_RAIL(BlockID.ACTIVATOR_RAIL, "Активирующие рельсы", "activatorrail", "tntrail", "activatortrack"),
-    DROPPER(BlockID.DROPPER, "Выбрасыватель", "dropper"),
+    AIR(BlockID.AIR, "Air", "air"),
+    STONE(BlockID.STONE, "Stone", "stone", "rock"),
+    GRASS(BlockID.GRASS, "Grass", "grass"),
+    DIRT(BlockID.DIRT, "Dirt", "dirt"),
+    COBBLESTONE(BlockID.COBBLESTONE, "Cobblestone", "cobblestone", "cobble"),
+    WOOD(BlockID.WOOD, "Wood", "wood", "woodplank", "plank", "woodplanks", "planks"),
+    SAPLING(BlockID.SAPLING, "Sapling", "sapling", "seedling"),
+    BEDROCK(BlockID.BEDROCK, "Bedrock", "adminium", "bedrock"),
+    WATER(BlockID.WATER, "Water", "watermoving", "movingwater", "flowingwater", "waterflowing"),
+    STATIONARY_WATER(BlockID.STATIONARY_WATER, "Water (stationary)", "water", "waterstationary", "stationarywater", "stillwater"),
+    LAVA(BlockID.LAVA, "Lava", "lavamoving", "movinglava", "flowinglava", "lavaflowing"),
+    STATIONARY_LAVA(BlockID.STATIONARY_LAVA, "Lava (stationary)", "lava", "lavastationary", "stationarylava", "stilllava"),
+    SAND(BlockID.SAND, "Sand", "sand"),
+    GRAVEL(BlockID.GRAVEL, "Gravel", "gravel"),
+    GOLD_ORE(BlockID.GOLD_ORE, "Gold ore", "goldore"),
+    IRON_ORE(BlockID.IRON_ORE, "Iron ore", "ironore"),
+    COAL_ORE(BlockID.COAL_ORE, "Coal ore", "coalore"),
+    LOG(BlockID.LOG, "Log", "log", "tree", "pine", "oak", "birch", "redwood"),
+    LEAVES(BlockID.LEAVES, "Leaves", "leaves", "leaf"),
+    SPONGE(BlockID.SPONGE, "Sponge", "sponge"),
+    GLASS(BlockID.GLASS, "Glass", "glass"),
+    LAPIS_LAZULI_ORE(BlockID.LAPIS_LAZULI_ORE, "Lapis lazuli ore", "lapislazuliore", "blueore", "lapisore"),
+    LAPIS_LAZULI(BlockID.LAPIS_LAZULI_BLOCK, "Lapis lazuli", "lapislazuli", "lapislazuliblock", "bluerock"),
+    DISPENSER(BlockID.DISPENSER, "Dispenser", "dispenser"),
+    SANDSTONE(BlockID.SANDSTONE, "Sandstone", "sandstone"),
+    NOTE_BLOCK(BlockID.NOTE_BLOCK, "Note block", "musicblock", "noteblock", "note", "music", "instrument"),
+    BED(BlockID.BED, "Bed", "bed"),
+    POWERED_RAIL(BlockID.POWERED_RAIL, "Powered Rail", "poweredrail", "boosterrail", "poweredtrack", "boostertrack", "booster"),
+    DETECTOR_RAIL(BlockID.DETECTOR_RAIL, "Detector Rail", "detectorrail", "detector"),
+    PISTON_STICKY_BASE(BlockID.PISTON_STICKY_BASE, "Sticky Piston", "stickypiston"),
+    WEB(BlockID.WEB, "Web", "web", "spiderweb"),
+    LONG_GRASS(BlockID.LONG_GRASS, "Long grass", "longgrass", "tallgrass"),
+    DEAD_BUSH(BlockID.DEAD_BUSH, "Shrub", "deadbush", "shrub", "deadshrub", "tumbleweed"),
+    PISTON_BASE(BlockID.PISTON_BASE, "Piston", "piston"),
+    PISTON_EXTENSION(BlockID.PISTON_EXTENSION, "Piston extension", "pistonextendsion", "pistonhead"),
+    CLOTH(BlockID.CLOTH, "Wool", "cloth", "wool"),
+    PISTON_MOVING_PIECE(BlockID.PISTON_MOVING_PIECE, "Piston moving piece", "movingpiston"),
+    YELLOW_FLOWER(BlockID.YELLOW_FLOWER, "Yellow flower", "yellowflower", "flower"),
+    RED_FLOWER(BlockID.RED_FLOWER, "Red rose", "redflower", "redrose", "rose"),
+    BROWN_MUSHROOM(BlockID.BROWN_MUSHROOM, "Brown mushroom", "brownmushroom", "mushroom"),
+    RED_MUSHROOM(BlockID.RED_MUSHROOM, "Red mushroom", "redmushroom"),
+    GOLD_BLOCK(BlockID.GOLD_BLOCK, "Gold block", "gold", "goldblock"),
+    IRON_BLOCK(BlockID.IRON_BLOCK, "Iron block", "iron", "ironblock"),
+    DOUBLE_STEP(BlockID.DOUBLE_STEP, "Double step", "doubleslab", "doublestoneslab", "doublestep"),
+    STEP(BlockID.STEP, "Step", "slab", "stoneslab", "step", "halfstep"),
+    BRICK(BlockID.BRICK, "Brick", "brick", "brickblock"),
+    TNT(BlockID.TNT, "TNT", "tnt", "c4", "explosive"),
+    BOOKCASE(BlockID.BOOKCASE, "Bookcase", "bookshelf", "bookshelves", "bookcase", "bookcases"),
+    MOSSY_COBBLESTONE(BlockID.MOSSY_COBBLESTONE, "Cobblestone (mossy)", "mossycobblestone", "mossstone", "mossystone", "mosscobble", "mossycobble", "moss", "mossy", "sossymobblecone"),
+    OBSIDIAN(BlockID.OBSIDIAN, "Obsidian", "obsidian"),
+    TORCH(BlockID.TORCH, "Torch", "torch", "light", "candle"),
+    FIRE(BlockID.FIRE, "Fire", "fire", "flame", "flames"),
+    MOB_SPAWNER(BlockID.MOB_SPAWNER, "Mob spawner", "mobspawner", "spawner"),
+    WOODEN_STAIRS(BlockID.WOODEN_STAIRS, "Wooden stairs", "woodstair", "woodstairs", "woodenstair", "woodenstairs"),
+    CHEST(BlockID.CHEST, "Chest", "chest", "storage", "storagechest"),
+    REDSTONE_WIRE(BlockID.REDSTONE_WIRE, "Redstone wire", "redstone", "redstoneblock"),
+    DIAMOND_ORE(BlockID.DIAMOND_ORE, "Diamond ore", "diamondore"),
+    DIAMOND_BLOCK(BlockID.DIAMOND_BLOCK, "Diamond block", "diamond", "diamondblock"),
+    WORKBENCH(BlockID.WORKBENCH, "Workbench", "workbench", "table", "craftingtable", "crafting"),
+    CROPS(BlockID.CROPS, "Crops", "crops", "crop", "plant", "plants"),
+    SOIL(BlockID.SOIL, "Soil", "soil", "farmland"),
+    FURNACE(BlockID.FURNACE, "Furnace", "furnace"),
+    BURNING_FURNACE(BlockID.BURNING_FURNACE, "Furnace (burning)", "burningfurnace", "litfurnace"),
+    SIGN_POST(BlockID.SIGN_POST, "Sign post", "sign", "signpost"),
+    WOODEN_DOOR(BlockID.WOODEN_DOOR, "Wooden door", "wooddoor", "woodendoor", "door"),
+    LADDER(BlockID.LADDER, "Ladder", "ladder"),
+    MINECART_TRACKS(BlockID.MINECART_TRACKS, "Minecart tracks", "track", "tracks", "minecrattrack", "minecarttracks", "rails", "rail"),
+    COBBLESTONE_STAIRS(BlockID.COBBLESTONE_STAIRS, "Cobblestone stairs", "cobblestonestair", "cobblestonestairs", "cobblestair", "cobblestairs"),
+    WALL_SIGN(BlockID.WALL_SIGN, "Wall sign", "wallsign"),
+    LEVER(BlockID.LEVER, "Lever", "lever", "switch", "stonelever", "stoneswitch"),
+    STONE_PRESSURE_PLATE(BlockID.STONE_PRESSURE_PLATE, "Stone pressure plate", "stonepressureplate", "stoneplate"),
+    IRON_DOOR(BlockID.IRON_DOOR, "Iron Door", "irondoor"),
+    WOODEN_PRESSURE_PLATE(BlockID.WOODEN_PRESSURE_PLATE, "Wooden pressure plate", "woodpressureplate", "woodplate", "woodenpressureplate", "woodenplate", "plate", "pressureplate"),
+    REDSTONE_ORE(BlockID.REDSTONE_ORE, "Redstone ore", "redstoneore"),
+    GLOWING_REDSTONE_ORE(BlockID.GLOWING_REDSTONE_ORE, "Glowing redstone ore", "glowingredstoneore"),
+    REDSTONE_TORCH_OFF(BlockID.REDSTONE_TORCH_OFF, "Redstone torch (off)", "redstonetorchoff", "rstorchoff"),
+    REDSTONE_TORCH_ON(BlockID.REDSTONE_TORCH_ON, "Redstone torch (on)", "redstonetorch", "redstonetorchon", "rstorchon", "redtorch"),
+    STONE_BUTTON(BlockID.STONE_BUTTON, "Stone Button", "stonebutton", "button"),
+    SNOW(BlockID.SNOW, "Snow", "snow"),
+    ICE(BlockID.ICE, "Ice", "ice"),
+    SNOW_BLOCK(BlockID.SNOW_BLOCK, "Snow block", "snowblock"),
+    CACTUS(BlockID.CACTUS, "Cactus", "cactus", "cacti"),
+    CLAY(BlockID.CLAY, "Clay", "clay"),
+    SUGAR_CANE(BlockID.REED, "Reed", "reed", "cane", "sugarcane", "sugarcanes", "vine", "vines"),
+    JUKEBOX(BlockID.JUKEBOX, "Jukebox", "jukebox", "stereo", "recordplayer"),
+    FENCE(BlockID.FENCE, "Fence", "fence"),
+    PUMPKIN(BlockID.PUMPKIN, "Pumpkin", "pumpkin"),
+    NETHERRACK(BlockID.NETHERRACK, "Netherrack", "redmossycobblestone", "redcobblestone", "redmosstone", "redcobble", "netherstone", "netherrack", "nether", "hellstone"),
+    SOUL_SAND(BlockID.SLOW_SAND, "Soul sand", "slowmud", "mud", "soulsand", "hellmud"),
+    GLOWSTONE(BlockID.LIGHTSTONE, "Glowstone", "brittlegold", "glowstone", "lightstone", "brimstone", "australium"),
+    PORTAL(BlockID.PORTAL, "Portal", "portal"),
+    JACK_O_LANTERN(BlockID.JACKOLANTERN, "Pumpkin (on)", "pumpkinlighted", "pumpkinon", "litpumpkin", "jackolantern"),
+    CAKE(BlockID.CAKE_BLOCK, "Cake", "cake", "cakeblock"),
+    REDSTONE_REPEATER_OFF(BlockID.REDSTONE_REPEATER_OFF, "Redstone repeater (off)", "diodeoff", "redstonerepeater", "repeateroff", "delayeroff"),
+    REDSTONE_REPEATER_ON(BlockID.REDSTONE_REPEATER_ON, "Redstone repeater (on)", "diodeon", "redstonerepeateron", "repeateron", "delayeron"),
+    LOCKED_CHEST(BlockID.LOCKED_CHEST, "Locked chest", "lockedchest", "steveco", "supplycrate", "valveneedstoworkonep3nottf2kthx"),
+    TRAP_DOOR(BlockID.TRAP_DOOR, "Trap door", "trapdoor", "hatch", "floordoor"),
+    SILVERFISH_BLOCK(BlockID.SILVERFISH_BLOCK, "Silverfish block", "silverfish", "silver"),
+    STONE_BRICK(BlockID.STONE_BRICK, "Stone brick", "stonebrick", "sbrick", "smoothstonebrick"),
+    RED_MUSHROOM_CAP(BlockID.RED_MUSHROOM_CAP, "Red mushroom cap", "giantmushroomred", "redgiantmushroom", "redmushroomcap"),
+    BROWN_MUSHROOM_CAP(BlockID.BROWN_MUSHROOM_CAP, "Brown mushroom cap", "giantmushroombrown", "browngiantmushoom", "brownmushroomcap"),
+    IRON_BARS(BlockID.IRON_BARS, "Iron bars", "ironbars", "ironfence"),
+    GLASS_PANE(BlockID.GLASS_PANE, "Glass pane", "window", "glasspane", "glasswindow"),
+    MELON_BLOCK(BlockID.MELON_BLOCK, "Melon (block)", "melonblock"),
+    PUMPKIN_STEM(BlockID.PUMPKIN_STEM, "Pumpkin stem", "pumpkinstem"),
+    MELON_STEM(BlockID.MELON_STEM, "Melon stem", "melonstem"),
+    VINE(BlockID.VINE, "Vine", "vine", "vines", "creepers"),
+    FENCE_GATE(BlockID.FENCE_GATE, "Fence gate", "fencegate", "gate"),
+    BRICK_STAIRS(BlockID.BRICK_STAIRS, "Brick stairs", "brickstairs", "bricksteps"),
+    STONE_BRICK_STAIRS(BlockID.STONE_BRICK_STAIRS, "Stone brick stairs", "stonebrickstairs", "smoothstonebrickstairs"),
+    MYCELIUM(BlockID.MYCELIUM, "Mycelium", "fungus", "mycel"),
+    LILY_PAD(BlockID.LILY_PAD, "Lily pad", "lilypad", "waterlily"),
+    NETHER_BRICK(BlockID.NETHER_BRICK, "Nether brick", "netherbrick"),
+    NETHER_BRICK_FENCE(BlockID.NETHER_BRICK_FENCE, "Nether brick fence", "netherbrickfence", "netherfence"),
+    NETHER_BRICK_STAIRS(BlockID.NETHER_BRICK_STAIRS, "Nether brick stairs", "netherbrickstairs", "netherbricksteps", "netherstairs", "nethersteps"),
+    NETHER_WART(BlockID.NETHER_WART, "Nether wart", "netherwart", "netherstalk"),
+    ENCHANTMENT_TABLE(BlockID.ENCHANTMENT_TABLE, "Enchantment table", "enchantmenttable", "enchanttable"),
+    BREWING_STAND(BlockID.BREWING_STAND, "Brewing Stand", "brewingstand"),
+    CAULDRON(BlockID.CAULDRON, "Cauldron"),
+    END_PORTAL(BlockID.END_PORTAL, "End Portal", "endportal", "blackstuff", "airportal", "weirdblackstuff"),
+    END_PORTAL_FRAME(BlockID.END_PORTAL_FRAME, "End Portal Frame", "endportalframe", "airportalframe", "crystalblock"),
+    END_STONE(BlockID.END_STONE, "End Stone", "endstone", "enderstone", "endersand"),
+    DRAGON_EGG(BlockID.DRAGON_EGG, "Dragon Egg", "dragonegg", "dragons"),
+    REDSTONE_LAMP_OFF(BlockID.REDSTONE_LAMP_OFF, "Redstone lamp (off)", "redstonelamp", "redstonelampoff", "rslamp", "rslampoff", "rsglow", "rsglowoff"),
+    REDSTONE_LAMP_ON(BlockID.REDSTONE_LAMP_ON, "Redstone lamp (on)", "redstonelampon", "rslampon", "rsglowon"),
+    DOUBLE_WOODEN_STEP(BlockID.DOUBLE_WOODEN_STEP, "Double wood step", "doublewoodslab", "doublewoodstep"),
+    WOODEN_STEP(BlockID.WOODEN_STEP, "Wood step", "woodenslab", "woodslab", "woodstep", "woodhalfstep"),
+    COCOA_PLANT(BlockID.COCOA_PLANT, "Cocoa plant", "cocoplant", "cocoaplant"),
+    SANDSTONE_STAIRS(BlockID.SANDSTONE_STAIRS, "Sandstone stairs", "sandstairs", "sandstonestairs"),
+    EMERALD_ORE(BlockID.EMERALD_ORE, "Emerald ore", "emeraldore"),
+    ENDER_CHEST(BlockID.ENDER_CHEST, "Ender chest", "enderchest"),
+    TRIPWIRE_HOOK(BlockID.TRIPWIRE_HOOK, "Tripwire hook", "tripwirehook"),
+    TRIPWIRE(BlockID.TRIPWIRE, "Tripwire", "tripwire", "string"),
+    EMERALD_BLOCK(BlockID.EMERALD_BLOCK, "Emerald block", "emeraldblock", "emerald"),
+    SPRUCE_WOOD_STAIRS(BlockID.SPRUCE_WOOD_STAIRS, "Spruce wood stairs", "sprucestairs", "sprucewoodstairs"),
+    BIRCH_WOOD_STAIRS(BlockID.BIRCH_WOOD_STAIRS, "Birch wood stairs", "birchstairs", "birchwoodstairs"),
+    JUNGLE_WOOD_STAIRS(BlockID.JUNGLE_WOOD_STAIRS, "Jungle wood stairs", "junglestairs", "junglewoodstairs"),
+    COMMAND_BLOCK(BlockID.COMMAND_BLOCK, "Command block", "commandblock", "cmdblock", "command", "cmd"),
+    BEACON(BlockID.BEACON, "Beacon", "beacon", "beaconblock"),
+    COBBLESTONE_WALL(BlockID.COBBLESTONE_WALL, "Cobblestone wall", "cobblestonewall", "cobblewall"),
+    FLOWER_POT(BlockID.FLOWER_POT, "Flower pot", "flowerpot", "plantpot", "pot"),
+    CARROTS(BlockID.CARROTS, "Carrots", "carrots", "carrotsplant", "carrotsblock"),
+    POTATOES(BlockID.POTATOES, "Potatoes", "potatoes", "potatoesblock"),
+    WOODEN_BUTTON(BlockID.WOODEN_BUTTON, "Wooden button", "woodbutton", "woodenbutton"),
+    HEAD(BlockID.HEAD, "Head", "head", "skull"),
+    ANVIL(BlockID.ANVIL, "Anvil", "anvil", "blacksmith"),
+    TRAPPED_CHEST(BlockID.TRAPPED_CHEST, "Trapped Chest", "trappedchest", "redstonechest"),
+    PRESSURE_PLATE_LIGHT(BlockID.PRESSURE_PLATE_LIGHT, "Weighted Pressure Plate (Light)", "lightpressureplate"),
+    PRESSURE_PLATE_HEAVY(BlockID.PRESSURE_PLATE_HEAVY, "Weighted Pressure Plate (Heavy)", "heavypressureplate"),
+    COMPARATOR_OFF(BlockID.COMPARATOR_OFF, "Redstone Comparator (inactive)", "redstonecomparator", "comparator"),
+    COMPARATOR_ON(BlockID.COMPARATOR_ON, "Redstone Comparator (active)", "redstonecomparatoron", "comparatoron"),
+    DAYLIGHT_SENSOR(BlockID.DAYLIGHT_SENSOR, "Daylight Sesnor", "daylightsensor", "lightsensor"),
+    REDSTONE_BLOCK(BlockID.REDSTONE_BLOCK, "Block of Redstone", "redstoneblock", "blockofredstone"),
+    QUARTZ_ORE(BlockID.QUARTZ_ORE, "Nether Quartz Ore", "quartzore", "netherquartzore"),
+    HOPPER(BlockID.HOPPER, "Hopper", "hopper"),
+    QUARTZ_BLOCK(BlockID.QUARTZ_BLOCK, "Block of Quartz", "quartzblock", "quartz"),
+    QUARTZ_STAIRS(BlockID.QUARTZ_STAIRS, "Quartz Stairs", "quartzstairs"),
+    ACTIVATOR_RAIL(BlockID.ACTIVATOR_RAIL, "Activator Rail", "activatorrail", "tntrail", "activatortrack"),
+    DROPPER(BlockID.DROPPER, "Dropper", "dropper"),
     STAINED_CLAY(BlockID.STAINED_CLAY, "Stained clay", "stainedclay"),
     HAY_BLOCK(BlockID.HAY_BLOCK, "Hay Block", "hayblock", "haybale", "wheatbale"),
     CARPET(BlockID.CARPET, "Carpet", "carpet"),
     HARDENED_CLAY(BlockID.HARDENED_CLAY, "Hardened Clay", "hardenedclay", "hardclay"),
-    COAL_BLOCK(BlockID.COAL_BLOCK, "Block of Coal", "coalblock", "blockofcoal");
+    COAL_BLOCK(BlockID.COAL_BLOCK, "Block of Coal", "coalblock", "blockofcoal"),
+    PACKED_ICE(BlockID.PACKED_ICE, "Packed Ice", "packedice", "hardice"),
+    DOUBLE_PLANT(BlockID.DOUBLE_PLANT, "Large Flowers", "largeflowers", "doubleflowers");
 
     /**
      * Stores a map of the IDs for fast access.
@@ -287,7 +289,7 @@ public enum BlockType {
     private static Map<Integer, BaseBlock> dataItemBlockMapping = new HashMap<Integer, BaseBlock>();
     static {
         for (int data = 0; data < 16; ++data) {
-            //dataItemBlockMapping.put(typeDataKey(BlockID.DIRT, data), new BaseBlock(BlockID.DIRT, data));
+            dataItemBlockMapping.put(typeDataKey(BlockID.DIRT, data), new BaseBlock(BlockID.DIRT, data));
             dataItemBlockMapping.put(typeDataKey(BlockID.WOOD, data), new BaseBlock(BlockID.WOOD, data));
             dataItemBlockMapping.put(typeDataKey(BlockID.SAND, data), new BaseBlock(BlockID.SAND, data));
             dataItemBlockMapping.put(typeDataKey(BlockID.SANDSTONE, data), new BaseBlock(BlockID.SANDSTONE, data));
@@ -298,9 +300,9 @@ public enum BlockType {
             dataItemBlockMapping.put(typeDataKey(BlockID.COBBLESTONE_WALL, data), new BaseBlock(BlockID.COBBLESTONE_WALL, data));
             dataItemBlockMapping.put(typeDataKey(BlockID.STAINED_CLAY, data), new BaseBlock(BlockID.STAINED_CLAY, data));
             dataItemBlockMapping.put(typeDataKey(BlockID.CARPET, data), new BaseBlock(BlockID.CARPET, data));
-            //dataItemBlockMapping.put(typeDataKey(BlockID.FLOWER, data), new BaseBlock(BlockID.FLOWER, data));
-            //dataItemBlockMapping.put(typeDataKey(BlockID.LARGE_FLOWER, data), new BaseBlock(BlockID.LARGE_FLOWER, data));
-            //dataItemBlockMapping.put(typeDataKey(BlockID.STAINED_GLASS, data), new BaseBlock(BlockID.STAINED_GLASS, data));
+            dataItemBlockMapping.put(typeDataKey(BlockID.RED_FLOWER, data), new BaseBlock(BlockID.RED_FLOWER, data));
+            dataItemBlockMapping.put(typeDataKey(BlockID.DOUBLE_PLANT, data), new BaseBlock(BlockID.DOUBLE_PLANT, data));
+            dataItemBlockMapping.put(typeDataKey(BlockID.STAINED_GLASS, data), new BaseBlock(BlockID.STAINED_GLASS, data));
         }
 
         itemBlockMapping.put(ItemID.FLINT_AND_TINDER, new BaseBlock(BlockID.FIRE, -1));
@@ -324,10 +326,6 @@ public enum BlockType {
         itemBlockMapping.put(ItemID.CARROT, new BaseBlock(BlockID.CARROTS, -1));
         itemBlockMapping.put(ItemID.POTATO, new BaseBlock(BlockID.POTATOES, -1));
         itemBlockMapping.put(ItemID.COMPARATOR, new BaseBlock(BlockID.COMPARATOR_OFF, -1));
-
-        // These are just for fun:
-        itemBlockMapping.put(ItemID.BUCKET, new BaseBlock(BlockID.AIR, -1)); // There's nothing in the bucket, what did you expect?
-        itemBlockMapping.put(ItemID.MILK_BUCKET, new BaseBlock(BlockID.SNOW, -1)); // Whoops, spilled the milk
     }
 
     public static BaseBlock getBlockForItem(int typeId, int data) {
@@ -413,6 +411,7 @@ public enum BlockType {
         shouldPlaceLast.add(BlockID.COMPARATOR_ON);
         shouldPlaceLast.add(BlockID.ACTIVATOR_RAIL);
         shouldPlaceLast.add(BlockID.CARPET);
+        shouldPlaceLast.add(BlockID.DOUBLE_PLANT);
     }
 
     /**
@@ -516,6 +515,7 @@ public enum BlockType {
         canPassThrough.add(BlockID.COMPARATOR_ON);
         canPassThrough.add(BlockID.ACTIVATOR_RAIL);
         canPassThrough.add(BlockID.CARPET);
+        canPassThrough.add(BlockID.DOUBLE_PLANT);
     }
 
 
@@ -666,14 +666,18 @@ public enum BlockType {
      */
     private static final Set<Integer> usesData = new HashSet<Integer>();
     static {
+        usesData.add(BlockID.DIRT);
         usesData.add(BlockID.WOOD);
         usesData.add(BlockID.SAPLING);
         usesData.add(BlockID.WATER);
         usesData.add(BlockID.STATIONARY_WATER);
         usesData.add(BlockID.LAVA);
         usesData.add(BlockID.STATIONARY_LAVA);
+        usesData.add(BlockID.SAND);
         usesData.add(BlockID.LOG);
+        usesData.add(BlockID.LOG2);
         usesData.add(BlockID.LEAVES);
+        usesData.add(BlockID.LEAVES2);
         usesData.add(BlockID.DISPENSER);
         usesData.add(BlockID.SANDSTONE);
         usesData.add(BlockID.BED);
@@ -684,11 +688,12 @@ public enum BlockType {
         usesData.add(BlockID.PISTON_BASE);
         usesData.add(BlockID.PISTON_EXTENSION);
         usesData.add(BlockID.CLOTH);
+        usesData.add(BlockID.RED_FLOWER);
         usesData.add(BlockID.DOUBLE_STEP);
         usesData.add(BlockID.STEP);
         usesData.add(BlockID.TORCH);
         usesData.add(BlockID.FIRE);
-        usesData.add(BlockID.WOODEN_STAIRS);
+        usesData.add(BlockID.OAK_WOOD_STAIRS);
         usesData.add(BlockID.CHEST);
         usesData.add(BlockID.REDSTONE_WIRE);
         usesData.add(BlockID.CROPS);
@@ -730,7 +735,6 @@ public enum BlockType {
         usesData.add(BlockID.STONE_BRICK_STAIRS);
         usesData.add(BlockID.NETHER_BRICK_STAIRS);
         usesData.add(BlockID.NETHER_WART);
-        usesData.add(BlockID.ENCHANTMENT_TABLE);
         usesData.add(BlockID.BREWING_STAND);
         usesData.add(BlockID.CAULDRON);
         usesData.add(BlockID.END_PORTAL_FRAME);
@@ -753,14 +757,18 @@ public enum BlockType {
         usesData.add(BlockID.ANVIL);
         usesData.add(BlockID.PRESSURE_PLATE_LIGHT);
         usesData.add(BlockID.PRESSURE_PLATE_HEAVY);
+        usesData.add(BlockID.COMPARATOR_OFF);
+        usesData.add(BlockID.COMPARATOR_ON);
         usesData.add(BlockID.QUARTZ_BLOCK);
         usesData.add(BlockID.QUARTZ_STAIRS);
         usesData.add(BlockID.ACTIVATOR_RAIL);
         usesData.add(BlockID.DROPPER);
         usesData.add(BlockID.HOPPER);
         usesData.add(BlockID.STAINED_CLAY);
+        usesData.add(BlockID.STAINED_GLASS_PANE);
         usesData.add(BlockID.HAY_BLOCK);
         usesData.add(BlockID.CARPET);
+        usesData.add(BlockID.DOUBLE_PLANT);
     }
 
     /**
@@ -992,9 +1000,11 @@ public enum BlockType {
         isNaturalTerrainBlock.add(BlockID.GRAVEL);
         isNaturalTerrainBlock.add(BlockID.CLAY);
         isNaturalTerrainBlock.add(BlockID.MYCELIUM);
+        isNaturalTerrainBlock.add(BlockID.PACKED_ICE);
+        isNaturalTerrainBlock.add(BlockID.STAINED_CLAY);
 
         // hell
-        isNaturalTerrainBlock.add(BlockID.NETHERSTONE);
+        isNaturalTerrainBlock.add(BlockID.NETHERRACK);
         isNaturalTerrainBlock.add(BlockID.SLOW_SAND);
         isNaturalTerrainBlock.add(BlockID.LIGHTSTONE);
         isNaturalTerrainBlock.add(BlockID.QUARTZ_ORE);
@@ -1013,9 +1023,11 @@ public enum BlockType {
     /**
      * Checks if the block type is naturally occuring
      *
-     * @param id
-     * @return
+     * @param id      ID of the block
+     * @return true if the block type is naturally occuring
+     * @deprecated Use {@link #isNaturalTerrainBlock(int, int)}
      */
+    @Deprecated
     public static boolean isNaturalTerrainBlock(int id) {
         return isNaturalTerrainBlock.contains(id);
     }
@@ -1023,8 +1035,9 @@ public enum BlockType {
     /**
      * Checks if the block type is naturally occuring
      *
-     * @param block
-     * @return
+     * @param id      ID of the block
+     * @param data    Data value of the block
+     * @return true if the block type is naturally occuring
      */
     public static boolean isNaturalTerrainBlock(int id, int data) {
         return isNaturalTerrainBlock.contains(-16*id-data) || isNaturalTerrainBlock.contains(id);
@@ -1033,8 +1046,8 @@ public enum BlockType {
     /**
      * Checks if the block type is naturally occuring
      *
-     * @param block
-     * @return
+     * @param block The block
+     * @return true if the block type is naturally occuring
      */
     public static boolean isNaturalTerrainBlock(Block block) {
         return isNaturalTerrainBlock(block.getId(), block.getData());
@@ -1043,7 +1056,7 @@ public enum BlockType {
     /**
      * Checks if the block type is naturally occuring
      *
-     * @return
+     * @return true if the block type is naturally occuring
      */
     public boolean isNaturalTerrainBlock() {
         return isNaturalTerrainBlock.contains(id);
@@ -1067,7 +1080,6 @@ public enum BlockType {
         emitsLight.add(BlockID.PORTAL);
         emitsLight.add(BlockID.JACKOLANTERN);
         emitsLight.add(BlockID.REDSTONE_REPEATER_ON);
-        emitsLight.add(BlockID.LOCKED_CHEST);
         emitsLight.add(BlockID.BROWN_MUSHROOM_CAP);
         emitsLight.add(BlockID.RED_MUSHROOM_CAP);
         emitsLight.add(BlockID.END_PORTAL);
@@ -1115,7 +1127,7 @@ public enum BlockType {
         isTranslucent.add(BlockID.TORCH);
         isTranslucent.add(BlockID.FIRE);
         isTranslucent.add(BlockID.MOB_SPAWNER);
-        isTranslucent.add(BlockID.WOODEN_STAIRS);
+        isTranslucent.add(BlockID.OAK_WOOD_STAIRS);
         isTranslucent.add(BlockID.CHEST);
         isTranslucent.add(BlockID.REDSTONE_WIRE);
         isTranslucent.add(BlockID.CROPS);
@@ -1183,6 +1195,8 @@ public enum BlockType {
         isTranslucent.add(BlockID.QUARTZ_STAIRS);
         isTranslucent.add(BlockID.ACTIVATOR_RAIL);
         isTranslucent.add(BlockID.CARPET);
+        isTranslucent.add(BlockID.STAINED_GLASS_PANE);
+        isTranslucent.add(BlockID.DOUBLE_PLANT);
     }
 
     /**
@@ -1216,10 +1230,10 @@ public enum BlockType {
 
         nonDataBlockBagItems.put(BlockID.STONE, new BaseItem(BlockID.COBBLESTONE)); // rule 5
         nonDataBlockBagItems.put(BlockID.GRASS, new BaseItem(BlockID.DIRT)); // rule 5
-        addIdentity(BlockID.DIRT); // rule 1
+        addIdentities(BlockID.DIRT, 3); // rule 1
         addIdentity(BlockID.COBBLESTONE); // rule 1
-        addIdentity(BlockID.WOOD); // rule 1
-        addIdentities(BlockID.SAPLING, 3); // rule 1
+        addIdentities(BlockID.WOOD, 6); // rule 1
+        addIdentities(BlockID.SAPLING, 6); // rule 1
         nonDataBlockBagItems.put(BlockID.BEDROCK, doNotDestroy); // exception
         // WATER, rule 6
         // STATIONARY_WATER, rule 6
@@ -1230,7 +1244,7 @@ public enum BlockType {
         addIdentity(BlockID.GOLD_ORE); // rule 1
         addIdentity(BlockID.IRON_ORE); // rule 1
         nonDataBlockBagItems.put(BlockID.COAL_ORE, new BaseItem(ItemID.COAL)); // rule 5
-        addIdentities(BlockID.LOG, 3); // rule 1
+        addIdentities(BlockID.LOG, 4); // rule 1
         addIdentities(BlockID.LEAVES, 4); // rule 1 with shears, otherwise rule 3
         addIdentity(BlockID.SPONGE); // rule 1
         addIdentity(BlockID.GLASS); // rule 3
@@ -1266,7 +1280,7 @@ public enum BlockType {
         addIdentity(BlockID.TORCH); // rule 1
         // FIRE
         // MOB_SPAWNER
-        addIdentity(BlockID.WOODEN_STAIRS); // rule 3
+        addIdentity(BlockID.OAK_WOOD_STAIRS); // rule 1
         addIdentity(BlockID.CHEST); // rule 1
         nonDataBlockBagItems.put(BlockID.REDSTONE_WIRE, new BaseItem(ItemID.REDSTONE_DUST)); // rule 3
         nonDataBlockBagItems.put(BlockID.DIAMOND_ORE, new BaseItem(ItemID.DIAMOND)); // rule 5
@@ -1308,7 +1322,7 @@ public enum BlockType {
         nonDataBlockBagItems.put(BlockID.CAKE_BLOCK, new BaseItem(ItemID.CAKE_ITEM)); // rule 3
         nonDataBlockBagItems.put(BlockID.REDSTONE_REPEATER_OFF, new BaseItem(ItemID.REDSTONE_REPEATER)); // rule 3
         nonDataBlockBagItems.put(BlockID.REDSTONE_REPEATER_ON, new BaseItem(ItemID.REDSTONE_REPEATER)); // rule 3
-        addIdentity(BlockID.LOCKED_CHEST); // ???
+        addIdentities(BlockID.STAINED_GLASS_PANE, 16); // ???
         addIdentity(BlockID.TRAP_DOOR); // rule 1
         nonDataBlockBagItems.put(BlockID.SILVERFISH_BLOCK, doNotDestroy); // exception
         addIdentity(BlockID.STONE_BRICK); // rule 1
@@ -1383,6 +1397,14 @@ public enum BlockType {
         addIdentities(BlockID.CARPET, 16); // rule 1
         addIdentity(BlockID.HARDENED_CLAY); // rule 1
         addIdentity(BlockID.COAL_BLOCK); // rule 1
+
+        addIdentities(BlockID.LOG2, 1);
+        addIdentities(BlockID.LEAVES2, 1);
+        addIdentity(BlockID.ACACIA_STAIRS);
+        addIdentity(BlockID.DARK_OAK_STAIRS);
+        addIdentity(BlockID.PACKED_ICE);
+        addIdentities(BlockID.STAINED_GLASS_PANE, 16);
+        addIdentities(BlockID.DOUBLE_PLANT, 6);
     }
 
     /**
@@ -1618,38 +1640,38 @@ public enum BlockType {
             case BlockID.HAY_BLOCK:
                 return new BaseItemStack(BlockID.HAY_BLOCK); // strip orientation data
 
-            case BlockID.WOODEN_STAIRS:
-            case BlockID.COBBLESTONE_STAIRS:
-            case BlockID.BRICK_STAIRS:
-            case BlockID.STONE_BRICK_STAIRS:
-            case BlockID.NETHER_BRICK_STAIRS:
-            case BlockID.SPRUCE_WOOD_STAIRS:
-            case BlockID.BIRCH_WOOD_STAIRS:
-            case BlockID.JUNGLE_WOOD_STAIRS:
-            case BlockID.QUARTZ_STAIRS:
-                return new BaseItemStack(id); // strip data from stairs
+        case BlockID.OAK_WOOD_STAIRS:
+        case BlockID.COBBLESTONE_STAIRS:
+        case BlockID.BRICK_STAIRS:
+        case BlockID.STONE_BRICK_STAIRS:
+        case BlockID.NETHER_BRICK_STAIRS:
+        case BlockID.SPRUCE_WOOD_STAIRS:
+        case BlockID.BIRCH_WOOD_STAIRS:
+        case BlockID.JUNGLE_WOOD_STAIRS:
+        case BlockID.QUARTZ_STAIRS:
+            return new BaseItemStack(id); // strip data from stairs
 
-            case BlockID.BEDROCK:
-            case BlockID.WATER:
-            case BlockID.STATIONARY_WATER:
-            case BlockID.LAVA:
-            case BlockID.STATIONARY_LAVA:
-            case BlockID.GLASS:
-            case BlockID.PISTON_EXTENSION:
-            case BlockID.BOOKCASE:
-            case BlockID.FIRE:
-            case BlockID.MOB_SPAWNER:
-            case BlockID.SNOW:
-            case BlockID.ICE:
-            case BlockID.PORTAL:
-            case BlockID.AIR:
-            case BlockID.LOCKED_CHEST:
-            case BlockID.SILVERFISH_BLOCK:
-            case BlockID.VINE:
-            case BlockID.END_PORTAL:
-            case BlockID.END_PORTAL_FRAME:
-            case BlockID.HEAD:
-                return null;
+        case BlockID.BEDROCK:
+        case BlockID.WATER:
+        case BlockID.STATIONARY_WATER:
+        case BlockID.LAVA:
+        case BlockID.STATIONARY_LAVA:
+        case BlockID.GLASS:
+        case BlockID.STAINED_GLASS_PANE:
+        case BlockID.PISTON_EXTENSION:
+        case BlockID.BOOKCASE:
+        case BlockID.FIRE:
+        case BlockID.MOB_SPAWNER:
+        case BlockID.SNOW:
+        case BlockID.ICE:
+        case BlockID.PORTAL:
+        case BlockID.AIR:
+        case BlockID.SILVERFISH_BLOCK:
+        case BlockID.VINE:
+        case BlockID.END_PORTAL:
+        case BlockID.END_PORTAL_FRAME:
+        case BlockID.HEAD:
+            return null;
         }
 
         if (usesData(id)) {
@@ -1730,6 +1752,7 @@ public enum BlockType {
         nonDataAttachments.put(BlockID.COMPARATOR_OFF, PlayerDirection.DOWN);
         nonDataAttachments.put(BlockID.COMPARATOR_ON, PlayerDirection.DOWN);
         nonDataAttachments.put(BlockID.CARPET, PlayerDirection.DOWN);
+        nonDataAttachments.put(BlockID.DOUBLE_PLANT, PlayerDirection.DOWN);
 
         // Rails are hardcoded to be attached to the block below them.
         // In addition to that, let's attach ascending rails to the block they're ascending towards.
