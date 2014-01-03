@@ -26,6 +26,7 @@ import com.sk89q.minecraft.util.commands.CommandContext;
 import com.sk89q.minecraft.util.commands.CommandPermissions;
 import com.sk89q.minecraft.util.commands.Logging;
 import com.sk89q.worldedit.EditSession;
+import com.sk89q.worldedit.LocalConfiguration;
 import com.sk89q.worldedit.LocalPlayer;
 import com.sk89q.worldedit.LocalSession;
 import com.sk89q.worldedit.WorldEdit;
@@ -119,7 +120,7 @@ public class NavigationCommands {
         aliases = { "ceil" },
         usage = "[clearance]",
         desc = "Перейти на потолок",
-        flags = "g",
+        flags = "fg",
         min = 0,
         max = 1
     )
@@ -128,11 +129,11 @@ public class NavigationCommands {
     public void ceiling(CommandContext args, LocalSession session, LocalPlayer player,
                         EditSession editSession) throws WorldEditException {
 
-        int clearence = args.argsLength() > 0 ?
-                Math.max(0, args.getInteger(0)) : 0;
+        final int clearance = args.argsLength() > 0 ?
+            Math.max(0, args.getInteger(0)) : 0;
 
-        final boolean alwaysGlass = args.hasFlag('g');
-        if (player.ascendToCeiling(clearence, alwaysGlass)) {
+        final boolean alwaysGlass = getAlwaysGlass(args);
+        if (player.ascendToCeiling(clearance, alwaysGlass)) {
             player.print("Уииии!");
         } else {
             player.printError("Нет свободного места, которое вы нашли.");
@@ -180,7 +181,7 @@ public class NavigationCommands {
         aliases = { "up" },
         usage = "<block>",
         desc = "Подняться вверх на некоторое расстояние",
-        flags = "g",
+        flags = "fg",
         min = 1,
         max = 1
     )
@@ -189,13 +190,28 @@ public class NavigationCommands {
     public void up(CommandContext args, LocalSession session, LocalPlayer player,
                    EditSession editSession) throws WorldEditException {
 
-        int distance = args.getInteger(0);
+        final int distance = args.getInteger(0);
 
-        final boolean alwaysGlass = args.hasFlag('g');
+        final boolean alwaysGlass = getAlwaysGlass(args);
         if (player.ascendUpwards(distance, alwaysGlass)) {
             player.print("Уииии!");
         } else {
             player.printError("Вас ударило что-то выше Вас.");
         }
+    }
+
+    /**
+     * Helper function for /up and /ceil.
+     * 
+     * @param args The {@link CommandContext} to extract the flags from.
+     * @return true, if glass should always be put under the player
+     */
+    private boolean getAlwaysGlass(CommandContext args) {
+        final LocalConfiguration config = we.getConfiguration();
+
+        final boolean forceFlight = args.hasFlag('f');
+        final boolean forceGlass = args.hasFlag('g');
+
+        return forceGlass || (config.navigationUseGlass && !forceFlight);
     }
 }

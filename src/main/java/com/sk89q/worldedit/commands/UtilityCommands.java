@@ -314,20 +314,22 @@ public class UtilityCommands {
     }
 
     @Command(
-            aliases = {"/green", "green"},
-            usage = "[radius]",
-            desc = "Озеленяет зону",
-            min = 0,
-            max = 1
+        aliases = { "/green", "green" },
+        usage = "[radius]",
+        desc = "Озеленяет зону",
+        flags = "f",
+        min = 0,
+        max = 1
     )
     @CommandPermissions("worldedit.green")
     @Logging(PLACEMENT)
     public void green(CommandContext args, LocalSession session, LocalPlayer player,
                       EditSession editSession) throws WorldEditException {
 
-        double size = args.argsLength() > 0 ? Math.max(1, args.getDouble(0)) : 10;
+        final double size = args.argsLength() > 0 ? Math.max(1, args.getDouble(0)) : 10;
+        final boolean onlyNormalDirt = !args.hasFlag('f');
 
-        int affected = editSession.green(session.getPlacementPosition(player), size);
+        final int affected = editSession.green(session.getPlacementPosition(player), size, onlyNormalDirt);
         player.print(affected + " " + StringUtil.plural(affected, "блок озеленен", "блока озеленено", "блоков озеленено") + ".");
     }
 
