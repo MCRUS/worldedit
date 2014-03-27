@@ -19,38 +19,33 @@
 
 package com.sk89q.worldedit.commands;
 
-import static com.sk89q.minecraft.util.commands.Logging.LogMode.ALL;
-import static com.sk89q.minecraft.util.commands.Logging.LogMode.ORIENTATION_REGION;
-import static com.sk89q.minecraft.util.commands.Logging.LogMode.REGION;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
-
 import com.sk89q.minecraft.util.commands.Command;
 import com.sk89q.minecraft.util.commands.CommandContext;
 import com.sk89q.minecraft.util.commands.CommandPermissions;
 import com.sk89q.minecraft.util.commands.Logging;
-import com.sk89q.worldedit.EditSession;
-import com.sk89q.worldedit.HeightMap;
-import com.sk89q.worldedit.LocalPlayer;
-import com.sk89q.worldedit.LocalSession;
-import com.sk89q.worldedit.Vector;
-import com.sk89q.worldedit.WorldEdit;
-import com.sk89q.worldedit.WorldEditException;
+import com.sk89q.worldedit.*;
 import com.sk89q.worldedit.blocks.BaseBlock;
 import com.sk89q.worldedit.blocks.BlockID;
 import com.sk89q.worldedit.expression.ExpressionException;
 import com.sk89q.worldedit.filtering.GaussianKernel;
 import com.sk89q.worldedit.filtering.HeightMapFilter;
+import com.sk89q.worldedit.generator.FloraGenerator;
+import com.sk89q.worldedit.generator.ForestGenerator;
+import com.sk89q.worldedit.operation.GroundScatterFunction;
 import com.sk89q.worldedit.masks.Mask;
+import com.sk89q.worldedit.operation.FlatRegionApplicator;
+import com.sk89q.worldedit.operation.OperationHelper;
 import com.sk89q.worldedit.patterns.Pattern;
 import com.sk89q.worldedit.patterns.SingleBlockPattern;
-import com.sk89q.worldedit.regions.ConvexPolyhedralRegion;
-import com.sk89q.worldedit.regions.CuboidRegion;
-import com.sk89q.worldedit.regions.Region;
-import com.sk89q.worldedit.regions.RegionOperationException;
+import com.sk89q.worldedit.regions.*;
+import com.sk89q.worldedit.util.TreeGenerator;
 import com.sk89q.worldedit.util.StringUtil;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
+
+import static com.sk89q.minecraft.util.commands.Logging.LogMode.*;
 
 /**
  * Region related commands.
@@ -525,4 +520,70 @@ public class RegionCommands {
 
         player.print(affected + " " + StringUtil.plural(affected, "блок изменен", "блока изменено", "блоков изменено") + ".");
     }
+
+    @Command(
+            aliases = { "/forest" },
+            usage = "[type] [density]",
+            desc = "Make a forest within the region",
+            min = 0,
+            max = 2
+    )
+    @CommandPermissions("worldedit.region.forest")
+    @Logging(REGION)
+    public void forest(CommandContext args, LocalSession session, LocalPlayer player,
+                           EditSession editSession) throws WorldEditException {
+        TreeGenerator.TreeType type = args.argsLength() > 0 ? TreeGenerator.lookup(args.getString(0)) : TreeGenerator.TreeType.TREE;
+        double density = args.argsLength() > 1 ? args.getDouble(1) / 100 : 0.05;
+
+        if (type == null) {
+            player.printError("Tree type '" + args.getString(0) + "' is unknown.");
+            return;
+        }
+
+        Region region = session.getSelection(player.getWorld());
+
+        // We want to generate trees
+        ForestGenerator generator = new ForestGenerator(editSession, new TreeGenerator(type));
+
+        // And we want to scatter them
+        GroundScatterFunction scatter = new GroundScatterFunction(editSession, generator);
+        scatter.setDensity(density);
+        scatter.setRange(region);
+
+        // Generate that forest
+        FlatRegionApplicator operation = new FlatRegionApplicator(region, scatter);
+        OperationHelper.complete(operation);
+
+        player.print(operation.getAffected() + " trees created.");
+    }
+
+    @Command(
+            aliases = { "/flora" },
+            usage = "[density]",
+            desc = "Make flora within the region",
+            min = 0,
+            max = 1
+    )
+    @CommandPermissions("worldedit.region.flora")
+    @Logging(REGION)
+    public void flora(CommandContext args, LocalSession session, LocalPlayer player, EditSession editSession) throws WorldEditException {
+        double density = args.argsLength() > 0 ? args.getDouble(0) / 100 : 0.1;
+
+        Region region = session.getSelection(player.getWorld());
+
+        // We want to generate flora
+        FloraGenerator generator = new FloraGenerator(editSession);
+
+        // And we want to scatter them
+        GroundScatterFunction scatter = new GroundScatterFunction(editSession, generator);
+        scatter.setDensity(density);
+        scatter.setRange(region);
+
+        // Generate that flora
+        FlatRegionApplicator operation = new FlatRegionApplicator(region, scatter);
+        OperationHelper.complete(operation);
+
+        player.print(operation.getAffected() + " flora created.");
+    }
+
 }

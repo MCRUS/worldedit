@@ -19,35 +19,22 @@
 
 package com.sk89q.worldedit.commands;
 
-import static com.sk89q.minecraft.util.commands.Logging.LogMode.PLACEMENT;
-
-import java.util.Comparator;
-import java.util.Set;
-import java.util.SortedSet;
-import java.util.TreeSet;
-
-import com.sk89q.minecraft.util.commands.Command;
-import com.sk89q.minecraft.util.commands.CommandContext;
-import com.sk89q.minecraft.util.commands.CommandPermissions;
-import com.sk89q.minecraft.util.commands.CommandsManager;
-import com.sk89q.minecraft.util.commands.Console;
-import com.sk89q.minecraft.util.commands.Logging;
-import com.sk89q.worldedit.EditSession;
-import com.sk89q.worldedit.EntityType;
-import com.sk89q.worldedit.LocalConfiguration;
-import com.sk89q.worldedit.LocalPlayer;
-import com.sk89q.worldedit.LocalSession;
-import com.sk89q.worldedit.LocalWorld;
+import com.sk89q.minecraft.util.commands.*;
+import com.sk89q.worldedit.*;
 import com.sk89q.worldedit.LocalWorld.KillFlags;
-import com.sk89q.worldedit.Vector;
-import com.sk89q.worldedit.WorldEdit;
-import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.blocks.BaseBlock;
 import com.sk89q.worldedit.patterns.Pattern;
 import com.sk89q.worldedit.patterns.SingleBlockPattern;
 import com.sk89q.worldedit.regions.CuboidRegion;
 import com.sk89q.worldedit.regions.Region;
 import com.sk89q.worldedit.util.StringUtil;
+
+import java.util.Comparator;
+import java.util.Set;
+import java.util.SortedSet;
+import java.util.TreeSet;
+
+import static com.sk89q.minecraft.util.commands.Logging.LogMode.PLACEMENT;
 
 /**
  * Utility commands.
@@ -398,14 +385,14 @@ public class UtilityCommands {
         }
 
         FlagContainer flags = new FlagContainer(player);
-        flags.or(KillFlags.FRIENDLY      , args.hasFlag('f'));
+        flags.or(KillFlags.FRIENDLY      , args.hasFlag('f')); // No permission check here. Flags will instead be filtered by the subsequent calls.
         flags.or(KillFlags.PETS          , args.hasFlag('p'), "worldedit.butcher.pets");
         flags.or(KillFlags.NPCS          , args.hasFlag('n'), "worldedit.butcher.npcs");
         flags.or(KillFlags.GOLEMS        , args.hasFlag('g'), "worldedit.butcher.golems");
         flags.or(KillFlags.ANIMALS       , args.hasFlag('a'), "worldedit.butcher.animals");
         flags.or(KillFlags.AMBIENT       , args.hasFlag('b'), "worldedit.butcher.ambient");
         flags.or(KillFlags.WITH_LIGHTNING, args.hasFlag('l'), "worldedit.butcher.lightning");
-        // If you add flags here, please add them to com.sk89q.worldedit.tools.brushes.ButcherBrush as well
+        // If you add flags here, please add them to com.sk89q.worldedit.commands.BrushCommands.butcherBrush() as well
 
         int killed;
         if (player.isPlayer()) {
@@ -556,7 +543,7 @@ public class UtilityCommands {
             return;
         }
 
-        String command = args.getJoinedStrings(0).replaceAll("/", "");
+        String command = args.getJoinedStrings(0).toLowerCase().replaceAll("/", "");
 
         String helpMessage = commandsManager.getHelpMessages().get(command);
         if (helpMessage == null) {

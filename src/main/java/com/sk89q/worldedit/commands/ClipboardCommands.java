@@ -31,6 +31,7 @@ import com.sk89q.worldedit.*;
 import com.sk89q.worldedit.blocks.BaseBlock;
 import com.sk89q.worldedit.blocks.BlockID;
 import com.sk89q.worldedit.regions.CuboidRegion;
+import com.sk89q.worldedit.regions.CuboidRegionSelector;
 import com.sk89q.worldedit.regions.Region;
 import com.sk89q.worldedit.util.StringUtil;
 
@@ -139,17 +140,18 @@ public class ClipboardCommands {
     }
 
     @Command(
-            aliases = {"/paste"},
-            usage = "",
-            flags = "ao",
-            desc = "Вставляет содержимое буфера обмена",
-            help =
-                    "Вставить содержимое буфера обмена.\n" +
-                            "Флаги:\n" +
-                            "  -a пропускает блоки воздуха\n" +
-                            "  -o вставляет на позициях, которые были скопированы/вырезаны",
-            min = 0,
-            max = 0
+        aliases = { "/paste" },
+        usage = "",
+        flags = "sao",
+        desc = "Вставляет содержимое буфера обмена",
+        help =
+            "Вставляет содержимое буфера обмена.\n" +
+            "Флаги:\n" +
+            "  -a пропускает блоки воздуха\n" +
+            "  -o вставляет на позициях, которые были скопированы/вырезаны\n" +
+            "  -s выделяет регион после вставки",
+        min = 0,
+        max = 0
     )
     @CommandPermissions("worldedit.clipboard.paste")
     @Logging(PLACEMENT)
@@ -159,17 +161,32 @@ public class ClipboardCommands {
         boolean atOrigin = args.hasFlag('o');
         boolean pasteNoAir = args.hasFlag('a');
 
+        CuboidClipboard clipboard = session.getClipboard();
+
+        Vector pos = atOrigin ? session.getClipboard().getOrigin()
+                : session.getPlacementPosition(player);
+
         if (atOrigin) {
-            Vector pos = session.getClipboard().getOrigin();
-            session.getClipboard().place(editSession, pos, pasteNoAir);
-            session.getClipboard().pasteEntities(pos);
+            clipboard.place(editSession, pos, pasteNoAir);
+            clipboard.pasteEntities(pos);
             player.findFreePosition();
             player.print("Вставлено. Для отмены напишите //undo");
         } else {
-            Vector pos = session.getPlacementPosition(player);
-            session.getClipboard().paste(editSession, pos, pasteNoAir, true);
+            clipboard.paste(editSession, pos, pasteNoAir, true);
             player.findFreePosition();
             player.print("Вставлено. Для отмены напишите //undo");
+        }
+
+        if (args.hasFlag('s')) {
+            LocalWorld world = player.getWorld();
+            Vector pos2 = pos.add(clipboard.getSize().subtract(1, 1, 1));
+            if (!atOrigin) {
+                pos2 = pos2.add(clipboard.getOffset());
+                pos = pos.add(clipboard.getOffset());
+            }
+            session.setRegionSelector(world, new CuboidRegionSelector(world, pos, pos2));
+            session.getRegionSelector(world).learnChanges();
+            session.getRegionSelector(world).explainRegionAdjust(player, session);
         }
     }
 

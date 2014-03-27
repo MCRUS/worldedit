@@ -524,9 +524,7 @@ public enum BlockType {
      *
      * @param id
      * @return
-     * @deprecated Use {@link #canPassThrough(int,int)} instead
      */
-    @Deprecated
     public static boolean canPassThrough(int id) {
         return canPassThrough.contains(id);
     }
