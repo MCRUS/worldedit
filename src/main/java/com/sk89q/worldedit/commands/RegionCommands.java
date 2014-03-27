@@ -85,14 +85,14 @@ public class RegionCommands {
     }
 
     @Command(
-            aliases = { "/line" },
+            aliases = {"/line"},
             usage = "<block> [thickness]",
             desc = "Рисует линию между углами кубоида",
             help =
-                "Рисует линию между углами выделенного кубоида.\n" +
-                "Может быть применено только к кубоиду.\n" +
-                "Флаги:\n" +
-                "  -h генерирует только поверхность",
+                    "Рисует линию между углами выделенного кубоида.\n" +
+                            "Может быть применено только к кубоиду.\n" +
+                            "Флаги:\n" +
+                            "  -h генерирует только поверхность",
             flags = "h",
             min = 1,
             max = 2
@@ -100,7 +100,7 @@ public class RegionCommands {
     @CommandPermissions("worldedit.region.line")
     @Logging(REGION)
     public void line(CommandContext args, LocalSession session, LocalPlayer player,
-            EditSession editSession) throws WorldEditException {
+                     EditSession editSession) throws WorldEditException {
 
         Region region = session.getSelection(session.getSelectionWorld());
         if (!(region instanceof CuboidRegion)) {
@@ -118,18 +118,18 @@ public class RegionCommands {
         Vector pos2 = cuboidregion.getPos2();
         int blocksChanged = editSession.drawLine(pattern, pos1, pos2, args.argsLength() < 2 ? 0 : args.getDouble(1), !args.hasFlag('h'));
 
-        player.print(blocksChanged + " " + StringUtil.plural(blocksChanged, "блок был изменен", "блока было изменено", "блоков было изменено")+".");
+        player.print(blocksChanged + " " + StringUtil.plural(blocksChanged, "блок был изменен", "блока было изменено", "блоков было изменено") + ".");
     }
 
     @Command(
-            aliases = { "/curve" },
+            aliases = {"/curve"},
             usage = "<block> [thickness]",
             desc = "Рисует кривую через выделенные точки.",
             help =
-                "Рисует кривую через выделенные точки.\n" +
-                "Может быть примерено только к полигональному веделению.\n" +
-                "Флаги:\n" +
-                "  -h генерирует только оболочку",
+                    "Рисует кривую через выделенные точки.\n" +
+                            "Может быть примерено только к полигональному веделению.\n" +
+                            "Флаги:\n" +
+                            "  -h генерирует только оболочку",
             flags = "h",
             min = 1,
             max = 2
@@ -137,7 +137,7 @@ public class RegionCommands {
     @CommandPermissions("worldedit.region.curve")
     @Logging(REGION)
     public void curve(CommandContext args, LocalSession session, LocalPlayer player,
-            EditSession editSession) throws WorldEditException {
+                      EditSession editSession) throws WorldEditException {
 
         Region region = session.getSelection(session.getSelectionWorld());
         if (!(region instanceof ConvexPolyhedralRegion)) {
@@ -155,16 +155,16 @@ public class RegionCommands {
 
         int blocksChanged = editSession.drawSpline(pattern, vectors, 0, 0, 0, 10, args.argsLength() < 2 ? 0 : args.getDouble(1), !args.hasFlag('h'));
 
-        player.print(blocksChanged + " " + StringUtil.plural(blocksChanged, "блок был изменен", "блока было изменено", "блоков было изменено")+".");
+        player.print(blocksChanged + " " + StringUtil.plural(blocksChanged, "блок был изменен", "блока было изменено", "блоков было изменено") + ".");
     }
 
     @Command(
-        aliases = { "/replace", "/re", "/rep" },
-        usage = "[from-block] <to-block>",
-        desc = "Заменяет все блоки в выделенной территории на другие",
-        flags = "f",
-        min = 1,
-        max = 2
+            aliases = {"/replace", "/re", "/rep"},
+            usage = "[from-block] <to-block>",
+            desc = "Заменяет все блоки в выделенной территории на другие",
+            flags = "f",
+            min = 1,
+            max = 2
     )
     @CommandPermissions("worldedit.region.replace")
     @Logging(REGION)
@@ -522,21 +522,21 @@ public class RegionCommands {
     }
 
     @Command(
-            aliases = { "/forest" },
-            usage = "[type] [density]",
-            desc = "Make a forest within the region",
+            aliases = {"/forest"},
+            usage = "[тип] [назначение]",
+            desc = "Создает лет в регионе",
             min = 0,
             max = 2
     )
     @CommandPermissions("worldedit.region.forest")
     @Logging(REGION)
     public void forest(CommandContext args, LocalSession session, LocalPlayer player,
-                           EditSession editSession) throws WorldEditException {
+                       EditSession editSession) throws WorldEditException {
         TreeGenerator.TreeType type = args.argsLength() > 0 ? TreeGenerator.lookup(args.getString(0)) : TreeGenerator.TreeType.TREE;
         double density = args.argsLength() > 1 ? args.getDouble(1) / 100 : 0.05;
 
         if (type == null) {
-            player.printError("Tree type '" + args.getString(0) + "' is unknown.");
+            player.printError("Тип дерева '" + args.getString(0) + "' не найден.");
             return;
         }
 
@@ -554,13 +554,13 @@ public class RegionCommands {
         FlatRegionApplicator operation = new FlatRegionApplicator(region, scatter);
         OperationHelper.complete(operation);
 
-        player.print(operation.getAffected() + " trees created.");
+        player.print(operation.getAffected() + " " + StringUtil.plural(operation.getAffected(), "дерево", "дерева", "деревьев") + " создано.");
     }
 
     @Command(
-            aliases = { "/flora" },
-            usage = "[density]",
-            desc = "Make flora within the region",
+            aliases = {"/flora"},
+            usage = "[назначение]",
+            desc = "Создает флору в регионе",
             min = 0,
             max = 1
     )
@@ -583,7 +583,7 @@ public class RegionCommands {
         FlatRegionApplicator operation = new FlatRegionApplicator(region, scatter);
         OperationHelper.complete(operation);
 
-        player.print(operation.getAffected() + " flora created.");
+        player.print(operation.getAffected() + " " + StringUtil.plural(operation.getAffected(), "флора", "флоры", "флоры") + " создано.");
     }
 
 }
